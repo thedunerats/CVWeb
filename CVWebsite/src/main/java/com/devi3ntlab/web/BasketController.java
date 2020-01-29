@@ -26,6 +26,8 @@ public class BasketController {
 		// TODO Auto-generated constructor stub
 	}
 	
+	//FIXME: add some sysouts for testing purposes. remove them when you know its good.
+	
 	private BasketService basketService;
 	
 	@Autowired
@@ -58,18 +60,19 @@ public class BasketController {
 		return new ResponseEntity<>(basketService.findAll(),HttpStatus.OK);
 	}
 	
-	
-	//POST requests
-	
+
 	// make a new basket
 	
 	/*
-	 * POST method
+	 * GET method
 	 * [URL]/basket/insert
 	 * 
 	 * Creates a new basket.
+	 * It's a get method because nothing gets sent to through the response body.(no input)
+	 * It's all done on the back end.
+	 * WORKS[1/22/2020]
 	 */
-	@PostMapping(value="/insert", produces=MediaType.APPLICATION_JSON_VALUE) // nothing gets passed in request.
+	@GetMapping(value="/insert", produces=MediaType.APPLICATION_JSON_VALUE) // nothing gets passed in request.
 	// but we need to send back a basket response to the DOM.
 	// I think we need to do this for the other ones too. YUP. FIX IT NOW!
 	// we want it to load in real time, so we should send one back.
@@ -81,12 +84,12 @@ public class BasketController {
 		//make custom error messages?. sounds good to me.
 		// first: get number of baskets. 
 		// lets say no more than 3 for now.
-		Basket b = new Basket(0); // new basket with no fruit in it
+
 		//FIXME: currently failing on this SQL statement. says the entity does not exist.
 		int numberOfBaskets = basketService.getNumberOfBaskets();
-		System.out.println("made it past sql statement" + numberOfBaskets); //remove later.
-		
-		if (numberOfBaskets < 3) { // no more than 3 baskets
+		System.out.println(numberOfBaskets);
+		if (numberOfBaskets < 4) { // no more than 3 baskets
+			Basket b = new Basket(0); // new basket with no fruit in it
 			basketService.save(b); // add new basket to db
 			
 			//do in real time: send the basket back to the front end.
@@ -95,12 +98,16 @@ public class BasketController {
 			
 			return new ResponseEntity<>(basketService.findAll(), HttpStatus.CREATED);
 		} else { // too many baskets
+			System.out.println("Too many baskets."); //testing only
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
 		} // note: you can press enter in a string and it will get moved to the next line.
 
 	}
 	
 
+	
+	//POST requests
 	/*
 	 * POST method
 	 * [URL]/basket/remove
@@ -117,13 +124,16 @@ public class BasketController {
 		Basket b = new Basket(breq.getId(), breq.getFruitsContained()); // currently existing basket
 		int numberOfBaskets = basketService.getNumberOfBaskets();
 		if (breq.getFruitsContained() == 0) { // must contain no fruit
-			if (numberOfBaskets > 0) { // must be at least 1 basket
+			if (numberOfBaskets > 0) { // cant have negative baskets
 				basketService.delete(b); // remove basket from db
+				System.out.println("Removed.");
 				return new ResponseEntity<>(basketService.findAll(), HttpStatus.CREATED); //good
 			} else { // too few baskets
+				System.out.println("No baskets");
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			} // note: you can press enter in a string and it will get moved to the next line.
 		} else { // more than 1 fruit in the current basket. dont waste fruit. take them out.
+			System.out.println("Please don't waste fruit. Remove them all first.");
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}

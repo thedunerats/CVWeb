@@ -18,7 +18,7 @@ public interface BasketRepository extends JpaRepository<Basket, Integer>  {
 	// maybeI'll add the delete option. (currently in the service layer)
 	
 	// get number of baskets.
-	@Query(value = "select count(basket_id) from baskets", nativeQuery = true)
+	@Query(value = "select count(*) from baskets", nativeQuery = true)
 	public int getNumberOfBaskets();
 	
 	// apparently is the name of the id is different than the one
