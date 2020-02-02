@@ -21,7 +21,7 @@ public interface BasketRepository extends JpaRepository<Basket, Integer>  {
 	@Query(value = "select count(*) from baskets", nativeQuery = true)
 	public int getNumberOfBaskets();
 	
-	// apparently is the name of the id is different than the one
+	// apparently if the name of the id is different than the one
 	//in the boilerplate code, it wont work. found that out 
 	// when I had basketId as a field in the class.
 	public Basket findById(int id); 

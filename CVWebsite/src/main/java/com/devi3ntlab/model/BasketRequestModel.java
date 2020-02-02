@@ -3,20 +3,21 @@ package com.devi3ntlab.model;
 public class BasketRequestModel {
 	
 	// this will go to a json.
-
+	// 2/2/2020: NOTE: this is obsolete. It isn't called in the controller.
+	
 	public BasketRequestModel() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	private int id;
+	private int basketId;
 	private int fruitsContained;
 	
 	public int getId() {
-		return id;
+		return basketId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setId(int basketId) {
+		this.basketId = basketId;
 	}
 
 	public int getFruitsContained() {
@@ -27,9 +28,9 @@ public class BasketRequestModel {
 		this.fruitsContained = fruitsContained;
 	}
 
-	public BasketRequestModel(int id, int fruitsContained) {
+	public BasketRequestModel(int basketId, int fruitsContained) {
 		super();
-		this.id = id;
+		this.basketId = basketId;
 		this.fruitsContained = fruitsContained;
 	}
 
@@ -38,7 +39,7 @@ public class BasketRequestModel {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + fruitsContained;
-		result = prime * result + id;
+		result = prime * result + basketId;
 		return result;
 	}
 
@@ -53,14 +54,15 @@ public class BasketRequestModel {
 		BasketRequestModel other = (BasketRequestModel) obj;
 		if (fruitsContained != other.fruitsContained)
 			return false;
-		if (id != other.id)
+		if (basketId != other.basketId)
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "BasketRequestModel [id=" + id + ", fruitsContained=" + fruitsContained + "]";
+		return "BasketRequestModel [basketId=" + basketId + ", fruitsContained=" + fruitsContained + "]";
 	}
+
 
 }

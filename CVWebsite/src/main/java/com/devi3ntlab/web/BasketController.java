@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devi3ntlab.model.Basket;
-import com.devi3ntlab.model.BasketRequestModel;
+//import com.devi3ntlab.model.BasketRequestModel; OBSOLETE
 import com.devi3ntlab.service.BasketService;
 
 @CrossOrigin
@@ -84,11 +84,11 @@ public class BasketController {
 		//make custom error messages?. sounds good to me.
 		// first: get number of baskets. 
 		// lets say no more than 3 for now.
-
+		
 		//FIXME: currently failing on this SQL statement. says the entity does not exist.
 		int numberOfBaskets = basketService.getNumberOfBaskets();
 		System.out.println(numberOfBaskets);
-		if (numberOfBaskets < 4) { // no more than 3 baskets
+		if (numberOfBaskets < 3) { // no more than 3 baskets
 			Basket b = new Basket(0); // new basket with no fruit in it
 			basketService.save(b); // add new basket to db
 			
@@ -115,19 +115,27 @@ public class BasketController {
 	 * removes an existing basket by its ID.
 	 */
 	@PostMapping(value="/remove",consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Basket>> deleteBasket(@RequestBody BasketRequestModel breq) {
-		// FIXME: doesn't do delete yet.
+	public ResponseEntity<List<Basket>> deleteBasket(@RequestBody Basket b) {
+		//WORKS.
 		// control # of baskets, dont overload the DOM
 		//make custom error messages?. sounds good to me.
 		// first: get number of baskets. 
 		// lets say no more than 3 for now.
-		Basket b = new Basket(breq.getId(), breq.getFruitsContained()); // currently existing basket
+		System.out.println(b);
+		// NOTE: I changed the request body to a basket instead of a basket request model.
+		// and It worked. That's really weird. Maybe you have to do it that way?
+		//System.out.println(breq);
+		//System.out.println("Basket ID: " + breq.getId()); //FIXME: parameters are not making it inside. currently outputs 0, 0
+		//System.out.println("Fruits Contained: " + breq.getFruitsContained());
+		
+		//Basket b = new Basket(breq.getId(), breq.getFruitsContained()); // currently existing basket
+		// check what's coming through
 		int numberOfBaskets = basketService.getNumberOfBaskets();
-		if (breq.getFruitsContained() == 0) { // must contain no fruit
+		if (b.getFruitsContained() == 0) { // must contain no fruit
 			if (numberOfBaskets > 0) { // cant have negative baskets
 				basketService.delete(b); // remove basket from db
 				System.out.println("Removed.");
-				return new ResponseEntity<>(basketService.findAll(), HttpStatus.CREATED); //good
+				return new ResponseEntity<>(basketService.findAll(), HttpStatus.OK); //good
 			} else { // too few baskets
 				System.out.println("No baskets");
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
