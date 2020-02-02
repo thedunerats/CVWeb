@@ -34,6 +34,8 @@ export class DatabasedemoComponent implements OnInit {
 
   //basket to be passed
   private passedBasket:Basket = new Basket();
+  //fruit to be passed
+  private passedFruit:Fruit = new Fruit();
 
   // perform these functions when the component loads.
   ngOnInit() {
@@ -45,7 +47,25 @@ export class DatabasedemoComponent implements OnInit {
 
     // then, for each basket id, extract all the fruits for that id. 
   }
+//FRUITS
 
+getAllFruitsByBasketId(id: number){
+  this.fs.getAllFruitsByBasketId(id).subscribe(
+      data => {
+        this.fruits = data;
+        console.log(this.fruits)
+        console.log(data);
+      },
+
+      error => {
+        error = "Sorry. Something didn't quite work.";
+        console.log(error);
+      }
+  )
+}
+
+
+//BASKETS
   // this should work even if the basket have no fruit in them.
   //local version of get all baskets. will call upon the one listed in the service.
   //NOTE: the data callback might be a keyword. you might need to change it.
@@ -59,8 +79,6 @@ export class DatabasedemoComponent implements OnInit {
       // this gets called after something gets pulled from the response.
       data => {
         
-        // incompatible data type? weird.
-        // didnt work. still not working now. maybe the parameters are ordered wrong?
         // maybe I need an empty object to pass it into that resets every time.
         // let's look into that. (from create event component)
         // search component is good too. did it just pull everything from data?
@@ -84,23 +102,7 @@ export class DatabasedemoComponent implements OnInit {
   // we arrange the fruits by basket.
   // we will eventually start outputting messages in the DOM when we interact with the DB.
 
-  // making a new basket
-
-  getAllFruitsByBasketId(id: number){
-    this.fs.getAllFruitsByBasketId(id).subscribe(
-        data => {
-          this.fruits = data;
-          console.log(this.fruits)
-          console.log(data);
-        },
-
-        error => {
-          error = "Sorry. Something didn't quite work.";
-          console.log(error);
-        }
-    )
-  }
-
+  //making a new basket
   //Works in real time!
 createNewBasket() {
   this.bs.insertBasket().subscribe(
@@ -110,7 +112,7 @@ createNewBasket() {
       this.returnedBasket = data; // testing to see if it gets updated in real time
       if (this.returnedBasket != null){
         console.log("Success!");
-        this.getAllBaskets(); //dont know if this is going to work.
+        this.getAllBaskets(); 
         alert("Basket created.");
       } else {
         alert("Woah there, something went wrong. Try again please?");

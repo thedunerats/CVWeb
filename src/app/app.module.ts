@@ -8,14 +8,16 @@ import { HomeComponent } from './home/home.component';
 import { HeaderComponent } from './header/header.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatabasedemoComponent } from './databasedemo/databasedemo.component';
-import { HttpClientModule } from '@angular/common/http';  // you needed this.
+import { HttpClientModule } from '@angular/common/http';
+import { TrafficsimComponent } from './trafficsim/trafficsim.component';  // you needed this.
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     HeaderComponent,
-    DatabasedemoComponent
+    DatabasedemoComponent,
+    TrafficsimComponent
   ],
   imports: [
     BrowserModule,
