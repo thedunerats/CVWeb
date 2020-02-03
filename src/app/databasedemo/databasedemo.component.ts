@@ -23,6 +23,8 @@ export class DatabasedemoComponent implements OnInit {
   // write create and delete functions for fruit and baskets
   // lets get those done, get the formatting done and make sure everything works.
 
+  clicked:boolean = false;
+
   // initialize an empty basket array. to be filled and loaded on init
   baskets:Basket[] = [];
   // initialize an empty array for fruits. Every fruit in this array will
@@ -48,6 +50,13 @@ export class DatabasedemoComponent implements OnInit {
     // then, for each basket id, extract all the fruits for that id. 
   }
 //FRUITS
+
+//show the fruits in the baskets. we need to property bind it.
+showFruits(){
+ // let containedFruits = document.getElementById(id.toString());
+
+  this.clicked = !this.clicked;
+}
 
 getAllFruitsByBasketId(id: number){
   this.fs.getAllFruitsByBasketId(id).subscribe(

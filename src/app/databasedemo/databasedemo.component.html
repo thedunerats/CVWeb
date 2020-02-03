@@ -39,14 +39,28 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
             Use the search component, ngcontainer and ngtemplate as a guide. 
             Would use ngIf, a clicked event, and make the drop down if its clicked.
             Put a note inside so that the user knows to click to hide it.-->
-        <tr>
-            <td *ngFor="let b of baskets"> Fruits in Basket {{b.basketId}}:</td> <!--need a hover here.-->
+        <tr> <!--FIXME: the click works, but it toggles all of them at once. Need it to do only one.-->
+            <td (click) = "showFruits()" *ngFor="let b of baskets"> Fruits in Basket {{b.basketId}}:</td> <!--need a hover here.-->
         </tr>
         <tr> <!--display the fruits here. I think we can pass parameters into functions through the html. look into it.-->
-            <td></td>
+            <td *ngFor = "let b of baskets">
+                <!--need fruits and buttons here in an ngtemplate, inside and ngcontainer-->
+                <!--note: brett put a whole other tbody inside.-->
+                <!--let's start with adding a button inside to add fruit. then we will add fruit.-->
+                <!--Let's not break this again. At least until we have a better idea of what's happening.-->
+                    <tbody> 
+                        <tr>
+                            <td> <!--Maybe We need to show the fruits pertinent to the basket id?-->
+                                <ng-container *ngIf="clicked">                           
+                                    CLICK WORKS!
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+            </td>
         </tr>
         <tr> <!--form for adding / removing fruit and baskets. I think this needs to be a form if things are moving.-->
-            <td *ngFor="let b of baskets"> <!--FIXME: object not getting to back end. tried changing variable name in the request model there to make them the same. didnt work.-->
+            <td *ngFor="let b of baskets"> 
                 <button (click)="removeBasket(this.b.basketId, this.b.fruitsContained)">Click Here to delete this basket.</button>
             </td>
         </tr>
