@@ -23,13 +23,15 @@ export class DatabasedemoComponent implements OnInit {
   // write create and delete functions for fruit and baskets
   // lets get those done, get the formatting done and make sure everything works.
 
-  clicked:boolean = false;
-
   // initialize an empty basket array. to be filled and loaded on init
   baskets:Basket[] = [];
   // initialize an empty array for fruits. Every fruit in this array will
   // contain the same basket ID until it gets reset. (will all happen on init) 
   fruits:Fruit[] = [];
+
+  //array of fruit arrays, organized by basketid
+  //this is how we will display them in a structural directive.
+  fruitDisplay:Fruit[][] = [];
 
   //created basket from form, return object
   returnedBasket:Basket[] = null;
@@ -46,18 +48,58 @@ export class DatabasedemoComponent implements OnInit {
    this.getAllBaskets(); //for now. may change.
     // then for each baskets, extract all the ids. store them in an array afterward.
     // grab the ids from a for loop? or use ngfor?
+    console.log(this.baskets); //This is returning an empty array. Might need to do it in the get all baskets function.
 
     // then, for each basket id, extract all the fruits for that id. 
   }
 //FRUITS
 
 //show the fruits in the baskets. we need to property bind it.
-showFruits(){
- // let containedFruits = document.getElementById(id.toString());
+//FIXME: need to a toggle object to the array every time a basket gets added
+// and delete one every time it gets removed. will need to make those part of the getall, create and delete?
+// would probably need to get the index of the one being deleted in order to do it.
+// I'll need to print these to the console every time. we will do this on init.
+// decided not to do this. Too difficult. Sometimes you have to just ask if there's an easier way to do the same thing.
 
-  this.clicked = !this.clicked;
+
+//add fruit
+//might need to do nested arrays for the Fruits.
+//we might do an ng switch for it, but the number of cases changes. so not sure.
+insertFruit(form:NgForm){
+  // data sanitation
+  // make sure to update the fruits in real time.
+
+  //get basketid
+  this.passedFruit.setBasketid(form.value["basketNumber"]);
+  //get species
+  this.passedFruit.setSpecies(form.value["fruitSpecies"]);
+  //get color
+  this.passedFruit.setColor(form.value["fruitColor"]);
+  console.log(this.passedFruit);
+//input sanitation
+  if (this.passedFruit.basketId != null && this.passedFruit.species != null && this.passedFruit.color != null ){
+    this.fs.insertFruit(this.passedFruit).subscribe(
+
+      data => {
+        this.fruits = data;
+        console.log(data);
+        this.fruitDisplay.push(this.fruits);
+        console.log(this.fruitDisplay);
+    },
+
+      error => {
+        error = "Sorry. Something didn't quite work.";
+        console.log(error);
+        alert("That basket is full. Add to a different one or take a fruit out.");
+      }
+  
+    )
+  } else {
+    alert("At least one of the fields is empty. Please fill everything out before adding fruit.");
+  }
 }
 
+//need to push to fruit display within a loop. FIXME.
 getAllFruitsByBasketId(id: number){
   this.fs.getAllFruitsByBasketId(id).subscribe(
       data => {
@@ -72,7 +114,8 @@ getAllFruitsByBasketId(id: number){
       }
   )
 }
-
+//Note to self: might be too difficult to enable a click here to display the fruit for the baskets. might just do them on init and 
+//update them in real time along with the baskets.
 
 //BASKETS
   // this should work even if the basket have no fruit in them.
@@ -96,7 +139,7 @@ getAllFruitsByBasketId(id: number){
         this.baskets = data;
         console.log(data); 
         console.log(this.baskets);
-
+       
       },
 
       error =>{

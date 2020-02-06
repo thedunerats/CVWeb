@@ -40,7 +40,7 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
             Would use ngIf, a clicked event, and make the drop down if its clicked.
             Put a note inside so that the user knows to click to hide it.-->
         <tr> <!--FIXME: the click works, but it toggles all of them at once. Need it to do only one.-->
-            <td (click) = "showFruits()" *ngFor="let b of baskets"> Fruits in Basket {{b.basketId}}:</td> <!--need a hover here.-->
+            <td *ngFor="let b of baskets"> Fruits in Basket {{b.basketId}}:</td> <!--need a hover here.-->
         </tr>
         <tr> <!--display the fruits here. I think we can pass parameters into functions through the html. look into it.-->
             <td *ngFor = "let b of baskets">
@@ -48,13 +48,16 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
                 <!--note: brett put a whole other tbody inside.-->
                 <!--let's start with adding a button inside to add fruit. then we will add fruit.-->
                 <!--Let's not break this again. At least until we have a better idea of what's happening.-->
-                    <tbody> 
+                    <tbody> <!--Have an animation control this part.-->
+                        <tr> <!--need to do ngFor on the rows with the fruits. Let's try adding one. Might put the for in this tbody.-->
+                            <!--might put another TR above this with an NgFor container encapsulating it for the fruit.-->
+                            <!--Rather than having 3 forms, we will input the basket number in as well. Let's have only 1 form.
+                            3 forms is just going to be a nightmare.-->
+                            <!--Think about displaying the fruits as radio buttons for deleting.-->
+                            CLICK WORKS! 
+                        </tr>
                         <tr>
-                            <td> <!--Maybe We need to show the fruits pertinent to the basket id?-->
-                                <ng-container *ngIf="clicked">                           
-                                    CLICK WORKS!
-                                </ng-container>
-                            </td>
+
                         </tr>
                     </tbody>
             </td>
@@ -67,10 +70,21 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
     </tbody>
 </table>
 
-<!--Let's add a form for adding fruits.
+<!--Let's add a form for adding fruits.-->
+<h1>Add a new fruit here!</h1>
+<form class = "container justify-content-center" #fruitForm="ngForm" (ngSubmit)="insertFruit(fruitForm)">
+                            <!--This will contain the form data.-->
+    <input type="text" class="form-control" name = "fruitColor" placeholder="Color of Fruit">
+    <input type="text" class="form-control" name = "fruitSpecies" placeholder="Species of Fruit">
+    <input type="text" class="form-control" name = "basketNumber" placeholder="Choose a basket number:">
+    <button type="submit" class="btn btn-primary justify-content-center">Add fruit!</button>
+</form>
+
+<!--
 We also need to add the capacity to create / destroy baskets. (do that below)
 The button to destroy will correspond to the basket itself.
 Don't forget to add error handling here. dont want too many baskets.
 Don't want too few either. do we want to handle this on the back or
 the front end?-->
+
 <button (click)="createNewBasket()">Create a New Fruit Basket!</button>
