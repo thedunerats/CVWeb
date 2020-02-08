@@ -36,16 +36,17 @@ public interface BasketRepository extends JpaRepository<Basket, Integer>  {
 	// add + subtract fruits from the basket
 	
 	// addition
+	//apparently, you need parentheses when updating like this in a native query in hibernate.
 	@Query(value="update baskets set fruits_contained " + 
-			"= fruits_contained + :newfruits" + 
-			"where basket_id = :basketid",
+			"= (fruits_contained + :newfruits)" + 
+			"where (basket_id = :basketid)",
 			nativeQuery=true)
 	public void addFruitsToBasket(@Param("newfruits") int newfruits, @Param("basketid") int basketid);
 	
 	//subtraction
 	@Query(value="update baskets set fruits_contained " + 
-			"= fruits_contained - :newfruits" + 
-			"where basket_id = :basketid",
+			"= (fruits_contained - :newfruits)" + 
+			"where (basket_id = :basketid)",
 			nativeQuery=true)
 	public void subtractFruitsFromBasket(@Param("newfruits") int newfruits, @Param("basketid") int basketid);
 } 
