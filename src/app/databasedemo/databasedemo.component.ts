@@ -66,25 +66,25 @@ export class DatabasedemoComponent implements OnInit {
 //might need to do nested arrays for the Fruits.
 //we might do an ng switch for it, but the number of cases changes. so not sure.
 insertFruit(form:NgForm){
-  // data sanitation
+  // data sanitation - FIXME: form data not getting passed in.
   // make sure to update the fruits in real time.
 
   //get basketid
-  this.passedFruit.setBasketid(form.value["basketNumber"]);
+  this.passedFruit.setBasketid(form.value["basketnumber"]);
   //get species
-  this.passedFruit.setSpecies(form.value["fruitSpecies"]);
+  console.log(this.passedFruit.basketId); //testing only
+  this.passedFruit.setSpecies(form.value["fruitspecies"]);
   //get color
-  this.passedFruit.setColor(form.value["fruitColor"]);
+  this.passedFruit.setColor(form.value["fruitcolor"]);
   console.log(this.passedFruit);
 //input sanitation
   if (this.passedFruit.basketId != null && this.passedFruit.species != null && this.passedFruit.color != null ){
     this.fs.insertFruit(this.passedFruit).subscribe(
 
       data => {
-        this.fruits = data;
         console.log(data);
-        this.fruitDisplay.push(this.fruits);
-        console.log(this.fruitDisplay);
+        alert(data); //fruit succesfully added.
+        this.getAllBaskets(); //update DOM
     },
 
       error => {
@@ -106,6 +106,8 @@ getAllFruitsByBasketId(id: number){
         this.fruits = data;
         console.log(this.fruits)
         console.log(data);
+        this.fruitDisplay.push(this.fruits);
+        console.log(this.fruitDisplay);
       },
 
       error => {
@@ -139,6 +141,11 @@ getAllFruitsByBasketId(id: number){
         this.baskets = data;
         console.log(data); 
         console.log(this.baskets);
+
+        //grabbing and sorting all fruits by basketid
+        for(var i = 0; i < this.baskets.length; i++){
+          this.getAllFruitsByBasketId(this.baskets[i].basketId);
+        }
        
       },
 
