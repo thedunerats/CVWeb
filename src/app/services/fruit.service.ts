@@ -29,9 +29,9 @@ export class FruitService {
         return this.http.get(API_URL + "/fruit/bybasket/" + id) as Observable<Fruit[]>;
     }
 
-    //insert a fruit
-    insertFruit(fruit:Fruit): Observable<Fruit[]>{
-        return this.http.post(API_URL + "/insert", fruit) as Observable<Fruit[]>;
+    //insert a fruit. gets a message saying it's good.
+    insertFruit(fruit:Fruit): Observable<String>{
+        return this.http.post(API_URL + "/fruit/insert", fruit) as Observable<String>;
     }
 
     //removefruit: removes a fruit by id and updates the current list of fruits in real time
