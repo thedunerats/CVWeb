@@ -72,13 +72,15 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
 
 <!--Let's add a form for adding fruits.-->
 <h1>Add a new fruit here!</h1>
-<form class = "container justify-content-center" #fruitForm="ngForm" (ngSubmit)="insertFruit(fruitForm)">
-                            <!--This will contain the form data.-->
-    <input type="text" class="form-control" name = "fruitColor" placeholder="Color of Fruit">
-    <input type="text" class="form-control" name = "fruitSpecies" placeholder="Species of Fruit">
-    <input type="text" class="form-control" name = "basketNumber" placeholder="Choose a basket number:">
-    <button type="submit" class="btn btn-primary justify-content-center">Add fruit!</button>
-</form>
+<div class = "fruitCreation" id = "fruit-form">
+    <form class = "container justify-content-center" #fruitForm="ngForm" (ngSubmit)="insertFruit(fruitForm)">
+                                <!--This will contain the form data. NOTE: you NEEd the ngModel in the input tags.-->
+        <input type="text" class="form-control" name = "fruitcolor" id = "fruitColor" placeholder="Color of Fruit" ngModel>
+        <input type="text" class="form-control" name = "fruitspecies" id = "fruitSpecies" placeholder="Species of Fruit" ngModel>
+        <input type="text" class="form-control" name = "basketnumber" id = "basketNumber" placeholder="Choose a basket number:" ngModel>
+        <button type="submit" class="btn btn-primary justify-content-center">Add fruit!</button>
+    </form>
+</div>
 
 <!--
 We also need to add the capacity to create / destroy baskets. (do that below)

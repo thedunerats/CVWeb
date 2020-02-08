@@ -142,7 +142,7 @@ getAllFruitsByBasketId(id: number){
         console.log(data); 
         console.log(this.baskets);
 
-        //grabbing and sorting all fruits by basketid
+        //grabbing and sorting all fruits by basketid. testing to see if it works.
         for(var i = 0; i < this.baskets.length; i++){
           this.getAllFruitsByBasketId(this.baskets[i].basketId);
         }
