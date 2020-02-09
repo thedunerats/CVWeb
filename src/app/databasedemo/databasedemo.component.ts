@@ -99,14 +99,14 @@ insertFruit(form:NgForm){
   }
 }
 
-//need to push to fruit display within a loop. FIXME.
+
 getAllFruitsByBasketId(id: number){
   this.fs.getAllFruitsByBasketId(id).subscribe(
       data => {
         this.fruits = data;
         console.log(this.fruits)
         console.log(data);
-        this.fruitDisplay.push(this.fruits);
+        this.fruitDisplay.push(this.fruits); // add list by basketid to 2d array
         console.log(this.fruitDisplay);
       },
 
@@ -119,6 +119,10 @@ getAllFruitsByBasketId(id: number){
 //Note to self: might be too difficult to enable a click here to display the fruit for the baskets. might just do them on init and 
 //update them in real time along with the baskets.
 
+//remove fruit from basket by id
+deleteFruit(form:NgForm){
+
+}
 //BASKETS
   // this should work even if the basket have no fruit in them.
   //local version of get all baskets. will call upon the one listed in the service.
