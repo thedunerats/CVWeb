@@ -3,9 +3,11 @@ package com.devi3ntlab.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.devi3ntlab.model.Basket;
 
@@ -37,6 +39,9 @@ public interface BasketRepository extends JpaRepository<Basket, Integer>  {
 	
 	// addition
 	//apparently, you need parentheses when updating like this in a native query in hibernate.
+	//you also need @Transactional as well.
+	@Transactional //testing
+	@Modifying
 	@Query(value="update baskets set fruits_contained " + 
 			"= (fruits_contained + :newfruits)" + 
 			"where (basket_id = :basketid)",
@@ -44,6 +49,8 @@ public interface BasketRepository extends JpaRepository<Basket, Integer>  {
 	public void addFruitsToBasket(@Param("newfruits") int newfruits, @Param("basketid") int basketid);
 	
 	//subtraction
+	@Transactional
+	@Modifying
 	@Query(value="update baskets set fruits_contained " + 
 			"= (fruits_contained - :newfruits)" + 
 			"where (basket_id = :basketid)",
