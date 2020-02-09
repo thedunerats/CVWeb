@@ -74,7 +74,7 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
 <h1>Add a new fruit here!</h1>
 <div class = "fruitCreation" id = "fruit-form">
     <form class = "container justify-content-center" #fruitForm="ngForm" (ngSubmit)="insertFruit(fruitForm)">
-                                <!--This will contain the form data. NOTE: you NEEd the ngModel in the input tags.-->
+                                <!--This will contain the form data. NOTE: you NEED the ngModel in the input tags.-->
         <input type="text" class="form-control" name = "fruitcolor" id = "fruitColor" placeholder="Color of Fruit" ngModel>
         <input type="text" class="form-control" name = "fruitspecies" id = "fruitSpecies" placeholder="Species of Fruit" ngModel>
         <input type="text" class="form-control" name = "basketnumber" id = "basketNumber" placeholder="Choose a basket number:" ngModel>

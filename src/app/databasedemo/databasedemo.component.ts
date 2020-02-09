@@ -83,7 +83,7 @@ insertFruit(form:NgForm){
 
       data => {
         console.log(data);
-        alert(data); //fruit succesfully added.
+        alert("Fruit successfully added."); //fruit succesfully added.
         this.getAllBaskets(); //update DOM
     },
 
