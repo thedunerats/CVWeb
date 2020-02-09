@@ -90,8 +90,8 @@ public class FruitController {
 	 * Adds a fruit to a specific basket. Checks for basket existence.
 	 * transaction does not happen if no basket or if it contains 10 fruits.
 	 */
-	@PostMapping(value="/insert",consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Fruit>> insertFruit(@RequestBody FruitRequestModel freq) {
+	@PostMapping(value="/insert",consumes=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> insertFruit(@RequestBody FruitRequestModel freq) {
 		
 		// make sure to send 0 every time in the request object for an id if youre doing creation.
 		
@@ -114,7 +114,8 @@ public class FruitController {
 				// FIXME: may modify to return only the fruits in the basket that got changed.
 				// we may remove the status later once it works. might interfere with UX. (user experience)
 				// we may change this to return only the basket that got changed. not sure though.
-				return new ResponseEntity<>(fruitService.findAll(), HttpStatus.CREATED);
+				System.out.println("Made it!");
+				return new ResponseEntity<String>(HttpStatus.CREATED);
 			} else { // too many fruits. FIXME: is there a way to not do a transaction here?
 				// might try making a custom exception down the line with this.
 				// there is an example in SpringMVC -> web -> MovieController in your current workspace.
@@ -124,11 +125,12 @@ public class FruitController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		} else {
-			//error message
+			//error message (basket does NOT EXIST)
 			// if you want to send a status code back to your front end, output a response body.
 			// for reference, look at your mockiato project. it returns response entities.
 			// FIXME: is there a way to not do a transaction here?
 			// I guess you can use null if you need an escape.
+			System.out.println("Baskest does not exist.");
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 		
@@ -144,23 +146,7 @@ public class FruitController {
 		
 		// make sure you have enough error checking before moving on.
 		
-		
-		/*
-		Timestamp start = ereq.convertStringToTimestamp(ereq.getEventStartDate());
-		Timestamp end = ereq.convertStringToTimestamp(ereq.getEventEndDate());
-		User u = userService.findById(ereq.getEventOwner());
-		Event e = new Event(
-				ereq.getEventName(),
-				ereq.getEventDescription(),
-				start,	
-				end,
-				ereq.getLatitude(),
-				ereq.getLongitude(),
-				u);
-		eventService.save(e);
-		e = eventService.findByEventname(e.getEventname());
-		return e;
-		*/
+	
 	}
 	
 	/*
