@@ -25,8 +25,8 @@ export class FruitService {
     }
 
     //get all by basket id
-    getAllFruitsByBasketId(id:number): Observable<Fruit[]>{
-        return this.http.get(API_URL + "/fruit/bybasket/" + id) as Observable<Fruit[]>;
+    getAllFruitsByBasketId(fruitOrder:number[]): Observable<Fruit[][]>{
+        return this.http.post(API_URL + "/fruit/bybasket", fruitOrder ) as Observable<Fruit[][]>;
     }
 
     //insert a fruit. gets a message saying it's good.
