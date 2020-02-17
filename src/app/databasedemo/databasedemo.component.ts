@@ -41,6 +41,8 @@ export class DatabasedemoComponent implements OnInit {
   //fruit to be passed
   private passedFruit:Fruit = new Fruit();
 
+
+
   // perform these functions when the component loads.
   ngOnInit() {
     //get all fruit and baskets.
@@ -60,6 +62,9 @@ export class DatabasedemoComponent implements OnInit {
 // would probably need to get the index of the one being deleted in order to do it.
 // I'll need to print these to the console every time. we will do this on init.
 // decided not to do this. Too difficult. Sometimes you have to just ask if there's an easier way to do the same thing.
+
+//maybe I'll write the delay callback here.
+ 
 
 
 //add fruit
@@ -105,9 +110,9 @@ getAllFruitsByBasketId(id: number){
       data => {
         this.fruits = data;
         console.log(this.fruits)
-        console.log(data);
         this.fruitDisplay.push(this.fruits); // add list by basketid to 2d array
         console.log(this.fruitDisplay);
+        // sort array by basket id
       },
 
       error => {
@@ -143,12 +148,15 @@ deleteFruit(form:NgForm){
         // look at both html and ts file.
         //lets look into that.
         this.baskets = data;
-        console.log(data); 
         console.log(this.baskets);
-
         //grabbing and sorting all fruits by basketid. testing to see if it works.
+
+        //going to try turning that function into a callback for testing purposes.
+
         for(var i = 0; i < this.baskets.length; i++){
           this.getAllFruitsByBasketId(this.baskets[i].basketId);
+          console.log(this.baskets[i].basketId); //seeing if the order is the same
+          
         }
        
       },
