@@ -33,6 +33,8 @@ export class DatabasedemoComponent implements OnInit {
   //this is how we will display them in a structural directive.
   fruitDisplay:Fruit[][] = [];
 
+  fruitOrder:number[] = [];
+
   //created basket from form, return object
   returnedBasket:Basket[] = null;
 
@@ -105,12 +107,11 @@ insertFruit(form:NgForm){
 }
 
 
-getAllFruitsByBasketId(id: number){
-  this.fs.getAllFruitsByBasketId(id).subscribe(
+getAllFruitsByBasketId(fruitOrder: number[]){
+  this.fs.getAllFruitsByBasketId(fruitOrder).subscribe(
       data => {
-        this.fruits = data;
+        this.fruitDisplay = data;
         console.log(this.fruits)
-        this.fruitDisplay.push(this.fruits); // add list by basketid to 2d array
         console.log(this.fruitDisplay);
         // sort array by basket id
       },
@@ -154,10 +155,11 @@ deleteFruit(form:NgForm){
         //going to try turning that function into a callback for testing purposes.
 
         for(var i = 0; i < this.baskets.length; i++){
-          this.getAllFruitsByBasketId(this.baskets[i].basketId);
+          this.fruitOrder.push(this.baskets[i].basketId);
           console.log(this.baskets[i].basketId); //seeing if the order is the same
-          
         }
+        console.log(this.fruitOrder);
+        this.getAllFruitsByBasketId(this.fruitOrder);
        
       },
 
