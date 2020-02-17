@@ -1,5 +1,6 @@
 package com.devi3ntlab.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,16 +66,6 @@ public class FruitController {
 		return fruitService.findAll();
 	}
 	
-	/*
-	 * GET method
-	 * [URL]/fruit/bybasket/{id}
-	 * Returns a list of all of the fruits in a certain basket.
-	 * Use {} if you need to pass in a parameter.
-	 */
-	@GetMapping(value="/bybasket/{id}", produces=MediaType.APPLICATION_JSON_VALUE)
-	public List<Fruit> findAllByBasketId(@PathVariable int id) {
-		return fruitService.findAllByBasketId(id);
-	}
 	// by color and species? I think I'll add those. (finish controller then decide)
 	// No, I don't think I need to. Just need to divide by basket.
 	// I just don't need that functionality.
@@ -83,6 +73,25 @@ public class FruitController {
 	// POST requests. maybe I'll do put / delete as well?
 	// NOTE: we may need to have these methods produce a json as well.
 	// lets look up more examples to see what we can find.
+	
+	/*
+	 * Post method
+	 * [URL]/fruit/bybasket
+	 * Returns a list of all of the fruits in a certain basket.
+	 * Use {} if you need to pass in a parameter.
+	 */
+	@PostMapping(value="/bybasket", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public List<List<Fruit>> findAllByBasketId(@RequestBody int[] BasketOrder) {
+		ArrayList<List<Fruit>> output = new ArrayList<>(); //let's see if it works.
+		
+		for (int i = 0; i < BasketOrder.length; i++) {
+			System.out.println("Basket Number: " + BasketOrder[i]);
+			output.add(fruitService.findAllByBasketId(BasketOrder[i]));
+		}
+
+		return output;
+	}
+
 	
 	/*
 	 * POST method
@@ -166,6 +175,7 @@ public class FruitController {
 		Basket b = basketService.findById(freq.getBasketId()); //find basket from supplied fruit
 		
 		// construct the fruit from the request model
+		//NOTE: we might need to change the request body to a fruit.
 		Fruit f = new Fruit(freq.getId(),
 						b,
 						freq.getSpecies(),
