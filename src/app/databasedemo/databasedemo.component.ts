@@ -43,7 +43,7 @@ export class DatabasedemoComponent implements OnInit {
   //fruit to be passed
   private passedFruit:Fruit = new Fruit();
 
-
+  private fruitId:number;
 
   // perform these functions when the component loads.
   ngOnInit() {
@@ -124,11 +124,48 @@ getAllFruitsByBasketId(fruitOrder: number[]){
 }
 //Note to self: might be too difficult to enable a click here to display the fruit for the baskets. might just do them on init and 
 //update them in real time along with the baskets.
+getFruitbyId(id:number){
+  this.fs.getFruitById(id).subscribe(
+    data => {
+      this.passedFruit = data;
+      console.log(this.passedFruit)
+      //add the call to the fruit service here to delete the form
+      //will do it here as opposed to the other function
+      if (this.passedFruit.id != 0) {
+        this.fs.removeFruit(this.passedFruit).subscribe(
+          data => {
+            console.log(data);
+            console.log("Fruit removed.")
+            this.getAllBaskets(); //real time refresh
+          },
+          error => {
+            error = "Oops. The fruit is still here.";
+            console.log(error);
+            this.getAllBaskets(); //not how I want it to work but this may be the only way.
+          }
+        )
+      } else {
+        console.log("Fruit is empty. Fix it.");
+      }
+    },
+
+    error => {
+      error = "Whoops! Couldn't get that fruit!";
+      console.log(error);
+    }
+
+  )
+}
 
 //remove fruit from basket by id
 deleteFruit(form:NgForm){
-
+  this.fruitId = form.value["fruitId"];
+  this.getFruitbyId(this.fruitId); //get the fruit from DB
+ //write something that waits for the fruit to pass in properly.
+ //the console log is executing before the async finishes. Need to change that. 
+ //CHANGE: everything got moved to get fruit by id function for synchronicity.
 }
+
 //BASKETS
   // this should work even if the basket have no fruit in them.
   //local version of get all baskets. will call upon the one listed in the service.
@@ -153,6 +190,9 @@ deleteFruit(form:NgForm){
         //grabbing and sorting all fruits by basketid. testing to see if it works.
 
         //going to try turning that function into a callback for testing purposes.
+
+        this.fruitDisplay = []; //wipe this clean every time so it doesnt stack.
+        this.fruitOrder = []; //YAY! It worked!
 
         for(var i = 0; i < this.baskets.length; i++){
           this.fruitOrder.push(this.baskets[i].basketId);
