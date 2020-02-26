@@ -24,6 +24,11 @@ export class FruitService {
         return this.http.get(API_URL + "/fruit/all") as Observable<Fruit[]>;
     }
 
+    //find fruit by its id
+    getFruitById(id:number): Observable<Fruit>{
+        return this.http.get(API_URL + "/fruit/" + id) as Observable<Fruit>;
+    }
+
     //get all by basket id
     getAllFruitsByBasketId(fruitOrder:number[]): Observable<Fruit[][]>{
         return this.http.post(API_URL + "/fruit/bybasket", fruitOrder ) as Observable<Fruit[][]>;
@@ -36,8 +41,8 @@ export class FruitService {
 
     //removefruit: removes a fruit by id and updates the current list of fruits in real time
     // I might need the fruit ID for this. should be able to do it programatically.
-    removeFruitByID(fruit:Fruit): Observable<Fruit[]>{
-        return this.http.post(API_URL + "/fruit/remove",fruit) as Observable<Fruit[]>;
+    removeFruit(fruit:Fruit): Observable<String>{
+        return this.http.post(API_URL + "/fruit/remove",fruit) as Observable<String>;
     }
 
 
