@@ -47,11 +47,8 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
                 <!--let's start with adding a button inside to add fruit. then we will add fruit.-->
                 <!--Let's not break this again. At least until we have a better idea of what's happening.-->
                 <!---the 2 ngContainers didn't realy make a big difference. Maybe we can fix it later? might remove later.-->
-                <ng-container *ngFor = "let b of baskets">
-                    <ng-container *ngIf = "(b.fruitsContained > 0)">
                         <form class = "fruit-deletion" id = "fruit-selection" #deleteForm = "ngForm" (ngSubmit) = "deleteFruit(deleteForm)">    
                             <tbody> <!--Have an animation control this part.-->
-                                
                                 <!--need to do ngFor on the rows with the fruits. Let's try adding one. Might put the for in this tbody.-->
                                     <!--might put another TR above this with an NgFor container encapsulating it for the fruit.-->
                                     <!--Rather than having 3 forms, we will input the basket number in as well. Let's have only 1 form.
@@ -70,7 +67,7 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
                                         <!--{{i.id in the label worked, just for reference.}}-->
                                         <label class = "radio-inline">
                                             <input type = "radio" value = "{{i.id}}" name = "fruitId" ngModel>
-                                            {{i.color}} {{i.species}} 
+                                            {{i.color}} {{i.species}}
                                         </label>     
                                     </tr>
                                 </ng-container>   
@@ -82,8 +79,6 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
                                     </tr>
                             </tbody>
                         </form>  
-                    </ng-container>    
-                </ng-container>
             </td>
         </tr>
         <tr> <!--form for adding / removing fruit and baskets. I think this needs to be a form if things are moving.-->
