@@ -198,6 +198,7 @@ deleteFruit(form:NgForm){
           this.fruitOrder.push(this.baskets[i].basketId);
           console.log(this.baskets[i].basketId); //seeing if the order is the same
         }
+        this.fruitOrder.sort();
         console.log(this.fruitOrder);
         this.getAllFruitsByBasketId(this.fruitOrder);
        
