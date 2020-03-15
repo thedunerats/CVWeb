@@ -198,7 +198,7 @@ deleteFruit(form:NgForm){
           this.fruitOrder.push(this.baskets[i].basketId);
           console.log(this.baskets[i].basketId); //seeing if the order is the same
         }
-        this.fruitOrder.sort();
+        //this.fruitOrder.sort(); Leave this out. You didn't need it.
         console.log(this.fruitOrder);
         this.getAllFruitsByBasketId(this.fruitOrder);
        
@@ -262,6 +262,35 @@ removeBasket(id:number,fruitsContained:number){
     }
 
   )
+}
+
+//styling functions
+//these exclusively control the style of the page on the front end.
+
+//show tutorial overlay
+tutorialOn() {
+  document.getElementById("overlay").style.height = "100%";
+  document.getElementById("tutText0").style.visibility = "visible";
+  document.getElementById("tutText1").style.visibility = "visible";
+  document.getElementById("tutText2").style.visibility = "visible";
+  document.getElementById("tutText3").style.visibility = "visible";
+  document.getElementById("tutText4").style.visibility = "visible";
+  document.getElementById("tutText5").style.visibility = "visible";
+  document.getElementById("tutText6").style.visibility = "visible";
+  document.getElementById("tutText7").style.visibility = "visible";
+}
+
+//hide tutorial
+tutorialOff() {
+  document.getElementById("tutText0").style.visibility = "hidden";
+  document.getElementById("tutText1").style.visibility = "hidden";
+  document.getElementById("tutText2").style.visibility = "hidden";
+  document.getElementById("tutText3").style.visibility = "hidden";
+  document.getElementById("tutText4").style.visibility = "hidden";
+  document.getElementById("tutText5").style.visibility = "hidden";
+  document.getElementById("tutText6").style.visibility = "hidden";
+  document.getElementById("tutText7").style.visibility = "hidden";
+  document.getElementById("overlay").style.height = "0%";
 }
 
 }

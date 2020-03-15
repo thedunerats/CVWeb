@@ -24,7 +24,9 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
 
 <!--I think we need to justmake the whole table ngfor. rather than calling it every time. See if it works. it does.-->
 <!--we will need to add event binding / collapsible templates going forward. That ought to work.-->
-<table layout="row" layout-fill layout-align="center center"> <!--not centered. not sure why. deal with it later.-->
+<div id = "main" class = "bg">
+
+<table layout="row" class = "container justify-content-center"> <!--not centered. not sure why. deal with it later.-->
     <tbody >
         <tr> <!--You needed to iterate the ngFor through the columns each time. It works now.-->
             <td *ngFor="let b of baskets"> This is basket ID {{b.basketId}}</td>
@@ -88,17 +90,17 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
         </tr>
     </tbody>
 </table>
-
+<br>
 <!--Let's add a form for adding fruits.-->
-<h1>Add a new fruit here!</h1>
-<h3>Make sure the basket number matches one of the baskets above.</h3>
+<h1 class = "d-flex justify-content-center">Add a new fruit here!</h1>
+<h3 class = "d-flex justify-content-center">Make sure the basket number matches one of the baskets above.</h3>
 <div class = "fruitCreation" id = "fruit-form">
     <form class = "container justify-content-center" #fruitForm="ngForm" (ngSubmit)="insertFruit(fruitForm)">
                                 <!--This will contain the form data. NOTE: you NEED the ngModel in the input tags.-->
         <input type="text" class="form-control" name = "fruitcolor" id = "fruitColor" placeholder="Color of Fruit" ngModel>
         <input type="text" class="form-control" name = "fruitspecies" id = "fruitSpecies" placeholder="Species of Fruit" ngModel>
         <input type="text" class="form-control" name = "basketnumber" id = "basketNumber" placeholder="Choose a basket number:" ngModel>
-        <button type="submit" class="btn btn-primary justify-content-center">Add fruit!</button>
+        <button type="submit" class="d-flex btn btn-primary justify-content-center">Add fruit!</button>
     </form>
 </div>
 
@@ -108,5 +110,21 @@ The button to destroy will correspond to the basket itself.
 Don't forget to add error handling here. dont want too many baskets.
 Don't want too few either. do we want to handle this on the back or
 the front end?-->
+<button (click)="createNewBasket()" class="d-flex btn btn-primary justify-content-center">Create a New Fruit Basket!</button>
+<!--might need to make a div for the style with ngStyle.-->
+<button (click)="tutorialOn()">Need help?</button> <!--Triggers tutorial overlay-->
 
-<button (click)="createNewBasket()">Create a New Fruit Basket!</button>
+</div>
+<div id = "overlay" class = "overlay" (click)="tutorialOff()">
+    <h2 id = "tutText0" class = "backText d-flex justify-content-center">Welcome to the Graphical Database Demonstration!</h2>
+    <h2 id = "tutText1" class = "backText d-flex justify-content-center">Each of these fruit baskets persists the data that users send to it between interactions.</h2>
+    <!--will replace with the basket graphic once I make it.-->
+    <h2 id = "tutText2" class = "backText d-flex justify-content-center">You can create baskets by pressing the button labeled "Create a New Fruit Basket!".</h2>
+    <h2 id = "tutText3" class = "backText d-flex justify-content-center">Add fruits by dragging them from the palette and dropping them directly into the baskets.</h2>
+    <!--Replace with fruit graphics later.-->
+    <h2 id = "tutText4" class = "backText d-flex justify-content-center">The changes you make to the baskets will persist, even if you reload the web page.</h2>
+    <h2 id = "tutText5" class = "backText d-flex justify-content-center">The baskets even update in real time!</h2>
+    <h2 id = "tutText6" class = "backText d-flex justify-content-center">Try it for yourself!</h2>
+    <br>
+    <h2 id = "tutText7" class = "backText d-flex justify-content-center">Click to exit this tutorial.</h2>
+</div> <!--Overlay div-->
