@@ -12,6 +12,7 @@ import { DatabasedemoComponent } from './databasedemo/databasedemo.component';
 import { HttpClientModule } from '@angular/common/http';
 import { TrafficsimComponent } from './trafficsim/trafficsim.component';  // you needed this.
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DndModule } from 'ngx-drag-drop';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     HttpClientModule, // and this too.
     FormsModule, //hand typed.
     ReactiveFormsModule, // hand typed.
-    DragDropModule
+    DragDropModule,
+    DndModule
   ],
   providers: [],
   bootstrap: [AppComponent]
