@@ -26,7 +26,7 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
 <!--we will need to add event binding / collapsible templates going forward. That ought to work.-->
 <div id = "main" class = "bg">
 
-<table layout="row" class = "container justify-content-center"> <!--not centered. not sure why. deal with it later.-->
+<table layout="row" class = "container justify-content-center">
     <tbody >
         <tr> <!--You needed to iterate the ngFor through the columns each time. It works now.-->
             <td *ngFor="let b of baskets"> This is basket ID {{b.basketId}}</td>
@@ -91,6 +91,66 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
     </tbody>
 </table>
 <br>
+
+<!--Let's do the experimental drag and drop here.-->
+<!--May do Ngfor for the baskets. Will work on that later. need that to be droppable. and sortable.-->
+<!--Will also change the placement of everything once we know it all works.-->
+<!--CURRENTLY IMPLEMENTING: Drop zone with detection event-->
+
+
+ <!--CDK assumes vertical by default. -->
+ <!--FIXME: bottom list still re-arranging. Also, don't want to drag top row but maintain it as a drop
+zone. don't really want the top re-arranging either.-->
+<!--UPDATE: top doesn't drag anymore. But we don't want it moving during the hover event.-->
+<table class = "container justify-content-center">
+    <tbody>
+        <tr
+            cdkDropListOrientation="horizontal"
+            #topList = "cdkDropList"
+            [cdkDropListConnectedTo] = "testList" 
+            cdkDropListSortingDisabled
+            [cdkDropListData] = "testArrayTwo"
+            (cdkDropListDropped)="drop($event)" cdkDropList>
+                <td *ngFor = "let s of testArrayTwo" [cdkDragDisabled]="true" 
+                class = "basketContainer" cdkDrag>
+                    <div>{{s}}</div>
+                </td>
+        </tr>
+<br>
+        <tr
+            cdkDropListOrientation="horizontal"
+            #testList = "cdkDropList" 
+            cdkDropListSortingDisabled = "true"
+            [cdkDropListConnectedTo] = "topList"  
+            [cdkDropListData] = "testArray" cdkDropList>
+                <td *ngFor = "let t of testArray" [cdkDragData] = "t" cdkDrag> 
+                    {{t}}
+                </td>
+        </tr>
+        <tr>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td *ngFor = "let draggable of draggables"
+            [dndDraggable]="draggable.content"
+            [dndEffectAllowed]="draggable.effectAllowed"
+            [dndDisableIf]="draggable.disable"
+            (dndStart)="onDragStart($event)"
+            (dndCopied)="onDragged($event, 'copy')"
+            (dndLinked)="onDragged($event, 'link')"
+            (dndMoved)="onDragged($event, 'move')"
+            (dndCanceled)="onDragged($event, 'none')"
+            (dndEnd)="onDragEnd($event)">
+            draggable ({{draggable.effectAllowed}})
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
 <!--Let's add a form for adding fruits.-->
 <h1 class = "d-flex justify-content-center">Add a new fruit here!</h1>
 <h3 class = "d-flex justify-content-center">Make sure the basket number matches one of the baskets above.</h3>
@@ -104,6 +164,7 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
     </form>
 </div>
 
+
 <!--
 We also need to add the capacity to create / destroy baskets. (do that below)
 The button to destroy will correspond to the basket itself.
@@ -115,6 +176,7 @@ the front end?-->
 <button (click)="tutorialOn()">Need help?</button> <!--Triggers tutorial overlay-->
 
 </div>
+
 <div id = "overlay" class = "overlay" (click)="tutorialOff()">
     <h2 id = "tutText0" class = "backText d-flex justify-content-center">Welcome to the Graphical Database Demonstration!</h2>
     <h2 id = "tutText1" class = "backText d-flex justify-content-center">Each of these fruit baskets persists the data that users send to it between interactions.</h2>

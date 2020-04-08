@@ -5,9 +5,13 @@ import { FruitService } from '../services/fruit.service';
 import { Basket } from '../classes/basket';
 import { BasketService } from '../services/basket.service';
 import { NgForm } from '@angular/forms'; // will use to add fruit
+//remember to check the package.json for the proper format when you install something here.
 //probably won't need session storage here. Let's ingnore it for now but keep it in mind. 
 
 //FIXME: front end didnt update when new basket was created.
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { DndDropEvent } from "ngx-drag-drop";
+
 
 @Component({
   selector: 'app-databasedemo',
@@ -44,6 +48,55 @@ export class DatabasedemoComponent implements OnInit {
   private passedFruit:Fruit = new Fruit();
 
   private fruitId:number;
+
+  //create the array that contains the fruit values for the drag and drop
+  //maybe do it like a rainbow? eh, we can always rearrange it later.
+  static fruitPalette: Fruit[] = [];
+
+  //for testing only: a test array for the linked drop.
+  testArray: String[] = ['one','two','three'];
+  testArrayTwo: String[] = ['four','five','six'];
+
+  //draggable array (testing only) and ngx dnd stuff.
+  draggables = [
+    {
+      content: "testdata",
+      effectAllowed: "copy",
+      disable: false,
+      handle: false,
+    },
+    {
+      content: "testdata2",
+      effectAllowed: "move",
+      disable: false,
+      handle: false,
+    },
+    {
+      content: "testdata3",
+      effectAllowed: "link",
+      disable: false,
+      handle: false
+    },
+    {
+      content: "testdata4",
+      effectAllowed: "copy",
+      disable: true,
+      handle: false,
+    },
+    {
+      content: "testdata5",
+      effectAllowed: "copy",
+      disable: false,
+      handle: true,
+    }
+  ];
+  //these are ngx dnd variables.
+  public dropzoneEnabled:boolean = true;
+  public lastDropEvent:DndDropEvent | null = null;
+
+  private currentDraggableEvent:DragEvent;
+  private currentDragEffectMsg:string;
+
 
   // perform these functions when the component loads.
   ngOnInit() {
@@ -266,6 +319,42 @@ removeBasket(id:number,fruitsContained:number){
 
 //styling functions
 //these exclusively control the style of the page on the front end.
+
+// drag and drop functions
+
+//This is the landing function for a fruit being dropped into a basket.
+drop(event: CdkDragDrop<string[]>){
+  //output something to the console.
+  console.log(event.currentIndex);
+  console.log("Drop event recognized.")
+  alert("Drop zone" + event.currentIndex);
+}
+
+//these are ngx dnd functions.
+onDragStart( event:DragEvent ) {
+
+  this.lastDropEvent = null;
+
+  this.currentDragEffectMsg = "";
+  this.currentDraggableEvent = event;
+}
+
+onDragged( $event:DragEvent, effect:string ) {
+
+  this.currentDragEffectMsg = `Drag ended with effect "${effect}"!`;
+}
+
+onDragEnd( event:DragEvent ) {
+
+  this.currentDraggableEvent = event;
+  alert("Drag ended!");
+}
+
+onDrop( event:DndDropEvent ) {
+
+  this.lastDropEvent = event;
+}
+
 
 //show tutorial overlay
 tutorialOn() {
