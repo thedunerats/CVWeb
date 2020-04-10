@@ -104,35 +104,23 @@ zone. don't really want the top re-arranging either.-->
 <!--UPDATE: top doesn't drag anymore. But we don't want it moving during the hover event.-->
 <table class = "container justify-content-center">
     <tbody>
-        <tr
-            cdkDropListOrientation="horizontal"
-            #topList = "cdkDropList"
-            [cdkDropListConnectedTo] = "testList" 
-            cdkDropListSortingDisabled
-            [cdkDropListData] = "testArrayTwo"
-            (cdkDropListDropped)="drop($event)" cdkDropList>
-                <td *ngFor = "let s of testArrayTwo" [cdkDragDisabled]="true" 
-                class = "basketContainer" cdkDrag>
-                    <div>{{s}}</div>
-                </td>
-        </tr>
-<br>
-        <tr
-            cdkDropListOrientation="horizontal"
-            #testList = "cdkDropList" 
-            cdkDropListSortingDisabled = "true"
-            [cdkDropListConnectedTo] = "topList"  
-            [cdkDropListData] = "testArray" cdkDropList>
-                <td *ngFor = "let t of testArray" [cdkDragData] = "t" cdkDrag> 
-                    {{t}}
-                </td>
-        </tr>
         <tr>
-            <td>
+            <td *ngFor = "let b of baskets"> <!--Drop containers-->
+                <section fxFlex
+                fxLayout="column"
+                fxLayoutAlign="center center"
+                class="my-dropzone scrollable"
+                dndDropzone
+                dndDragoverClass="custom-drag-over"
+                [dndDisableIf]="!dropzoneEnabled"
+                (dndDrop)="onDrop($event,this.b.basketId)">
 
+                <pre *ngIf="lastDropEvent">{{ lastDropEvent | json }}</pre>
+
+                </section>
             </td>
         </tr>
-        <tr>
+        <tr> <!--Draggables-->
             <td *ngFor = "let draggable of draggables"
             [dndDraggable]="draggable.content"
             [dndEffectAllowed]="draggable.effectAllowed"

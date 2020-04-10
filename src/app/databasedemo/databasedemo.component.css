@@ -10,9 +10,10 @@ other events as well. to be implemented in the future.
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 100%; /* Need this to cover the whole page. Background size only covers what exists. */
+    min-height: 100%; /* Need this to cover the whole page. Background size only covers what exists. */
+    /*^ this is more effective that using height: 100%. */
     background-size: 400%;
-    animation: bg-animation 10s infinite alternate;
+    animation: bg-animation 15s infinite alternate;
   }
 
   @keyframes bg-animation{
@@ -23,6 +24,23 @@ other events as well. to be implemented in the future.
       background-position: right bottom;
     }
   }
+  
+  /* drop zones*/
+  .basketContainer {
+    height: 26px;
+  }
+
+  .my-dropzone {
+    padding: 8px;
+    transition: all 300ms ease;
+    height: 200px;
+  }
+  .custom-drag-over {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: limegreen;
+    transform: scale(1.05);
+  }
+
 
   .overlay { /* hidden tutorial overlay div*/
     position: fixed; /* Sit on top of the page content */

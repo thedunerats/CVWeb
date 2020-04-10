@@ -9,7 +9,6 @@ import { NgForm } from '@angular/forms'; // will use to add fruit
 //probably won't need session storage here. Let's ingnore it for now but keep it in mind. 
 
 //FIXME: front end didnt update when new basket was created.
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { DndDropEvent } from "ngx-drag-drop";
 
 
@@ -49,45 +48,32 @@ export class DatabasedemoComponent implements OnInit {
 
   private fruitId:number;
 
+  private dragString:String;
   //create the array that contains the fruit values for the drag and drop
-  //maybe do it like a rainbow? eh, we can always rearrange it later.
+  //maybe do it like a rainbow? eh, we can always rearrange / change it later.
   static fruitPalette: Fruit[] = [];
 
-  //for testing only: a test array for the linked drop.
-  testArray: String[] = ['one','two','three'];
-  testArrayTwo: String[] = ['four','five','six'];
-
+  private args: String[] = [];
   //draggable array (testing only) and ngx dnd stuff.
+  // it might need to be in this format. For that reason, I'm not inclined to alter it.
   draggables = [
     {
-      content: "testdata",
+      content: "Red Apple",
       effectAllowed: "copy",
       disable: false,
       handle: false,
     },
     {
-      content: "testdata2",
+      content: "Orange Orange",
       effectAllowed: "move",
       disable: false,
       handle: false,
     },
     {
-      content: "testdata3",
+      content: "Yellow Banana",
       effectAllowed: "link",
       disable: false,
       handle: false
-    },
-    {
-      content: "testdata4",
-      effectAllowed: "copy",
-      disable: true,
-      handle: false,
-    },
-    {
-      content: "testdata5",
-      effectAllowed: "copy",
-      disable: false,
-      handle: true,
     }
   ];
   //these are ngx dnd variables.
@@ -321,15 +307,6 @@ removeBasket(id:number,fruitsContained:number){
 //these exclusively control the style of the page on the front end.
 
 // drag and drop functions
-
-//This is the landing function for a fruit being dropped into a basket.
-drop(event: CdkDragDrop<string[]>){
-  //output something to the console.
-  console.log(event.currentIndex);
-  console.log("Drop event recognized.")
-  alert("Drop zone" + event.currentIndex);
-}
-
 //these are ngx dnd functions.
 onDragStart( event:DragEvent ) {
 
@@ -350,11 +327,14 @@ onDragEnd( event:DragEvent ) {
   alert("Drag ended!");
 }
 
-onDrop( event:DndDropEvent ) {
+onDrop(event:DndDropEvent, basketId:String) {
 
   this.lastDropEvent = event;
+  this.dragString = event.data;
+  this.args = this.dragString.split(" ");
+  alert(`A fruit was passed to ${basketId}`); //testing only. it works!
+  alert(`${this.dragString} passed to event handler. ${this.args[0]} ${this.args[1]}`); //this works too!
 }
-
 
 //show tutorial overlay
 tutorialOn() {
