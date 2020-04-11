@@ -1,5 +1,7 @@
 package com.devi3ntlab.web;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devi3ntlab.comparator.BasketIDSorter;
 import com.devi3ntlab.model.Basket;
 //import com.devi3ntlab.model.BasketRequestModel; OBSOLETE
 import com.devi3ntlab.service.BasketService;
@@ -57,7 +60,13 @@ public class BasketController {
 	 */
 	@GetMapping(value = "/getall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Basket>> getAllBaskets(){
-		return new ResponseEntity<>(basketService.findAll(),HttpStatus.OK);
+		List<Basket> output = new ArrayList<>();
+		output = basketService.findAll(); 
+		//sort the baskets by basket id
+		output.sort(new BasketIDSorter()); //testing
+		Collections.reverse(output); //maintains ascending order
+		System.out.println(output);
+		return new ResponseEntity<>(output,HttpStatus.OK);
 	}
 	
 

@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,6 +71,16 @@ public class FruitController {
 	// No, I don't think I need to. Just need to divide by basket.
 	// I just don't need that functionality.
 	
+	/*
+	 * GET Method
+	 * [URL]/fruit/{id}
+	 * Returns a fruit by a supplied fruit ID.
+	 */
+	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Fruit getFruitbyID(@PathVariable int id) {
+		return fruitService.findById(id);
+	}
+	
 	// POST requests. maybe I'll do put / delete as well?
 	// NOTE: we may need to have these methods produce a json as well.
 	// lets look up more examples to see what we can find.
@@ -88,7 +99,7 @@ public class FruitController {
 			System.out.println("Basket Number: " + BasketOrder[i]);
 			output.add(fruitService.findAllByBasketId(BasketOrder[i]));
 		}
-
+		
 		return output;
 	}
 
@@ -165,23 +176,19 @@ public class FruitController {
 	 * transaction does not happen if no basket or if it contains 10 fruits.
 	 */
 	@PostMapping(value="/remove",consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Fruit>> removeFruit(@RequestBody FruitRequestModel freq) {
+	public ResponseEntity<String> removeFruit(@RequestBody Fruit f) {
 		
 		// FIXME: add a max capacity to the basket. Maybe 10 / 20? I don't know.
 		// I think I'll do 10. we already pulled out a basket; just get # of fruits now.
 		// remember: post requests dont do anything to the url. parameters have to go in the request body.
 		
 		//get the basket from the supplied id
-		Basket b = basketService.findById(freq.getBasketId()); //find basket from supplied fruit
-		
-		// construct the fruit from the request model
-		//NOTE: we might need to change the request body to a fruit.
-		Fruit f = new Fruit(freq.getId(),
-						b,
-						freq.getSpecies(),
-						freq.getColor());
+		System.out.println("Fruit: " + f);
+		Basket b = f.getBasket(); //find basket from supplied fruit
+		System.out.println("Basket: " + b); //testing
 
 		int flag = b.getBasketId(); // check if basket exists
+		//^FIXME: line above is throwing a null pointer exception when delete is attempted.
 		if (flag > 0) { // if the basket exists
 			if (b.getFruitsContained() > 0) { //fruits in basket within capacity
 				fruitService.delete(f);
@@ -192,17 +199,16 @@ public class FruitController {
 				// might also change some of these to find by basket id.
 				// output different list for each basket id? we would need to 
 				// store that somewhere.
-				return new ResponseEntity<>(fruitService.findAll(), HttpStatus.OK);
+				return new ResponseEntity<>("Fruit removed.", HttpStatus.OK);
 			} else { // too few fruits. We will replace these with custom exceptions later.
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		} else {
+			return new ResponseEntity<>("Basket does not exist.", HttpStatus.BAD_REQUEST);
+		}
 			//error message
 			// if you want to send a status code back to your front end, output a response body.
 			// for reference, look at your mockiato project. it returns response entities.
-			System.out.println("Basket does not exist."); //testing only
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
 	}
 	
 	public FruitController() {
