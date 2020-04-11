@@ -92,7 +92,6 @@ export class DatabasedemoComponent implements OnInit {
     // then for each baskets, extract all the ids. store them in an array afterward.
     // grab the ids from a for loop? or use ngfor?
     console.log(this.baskets); //This is returning an empty array. Might need to do it in the get all baskets function.
-
     // then, for each basket id, extract all the fruits for that id. 
   }
 //FRUITS
@@ -227,7 +226,6 @@ deleteFruit(form:NgForm){
         this.baskets = data;
         console.log(this.baskets);
         //grabbing and sorting all fruits by basketid. testing to see if it works.
-
         //going to try turning that function into a callback for testing purposes.
 
         this.fruitDisplay = []; //wipe this clean every time so it doesnt stack.
@@ -237,7 +235,7 @@ deleteFruit(form:NgForm){
           this.fruitOrder.push(this.baskets[i].basketId);
           console.log(this.baskets[i].basketId); //seeing if the order is the same
         }
-        //this.fruitOrder.sort(); Leave this out. You didn't need it.
+        //this.quickSort(this.fruitOrder,0,this.fruitOrder.length-1); Leave this out. You didn't need it.
         console.log(this.fruitOrder);
         this.getAllFruitsByBasketId(this.fruitOrder);
        
@@ -327,13 +325,34 @@ onDragEnd( event:DragEvent ) {
   alert("Drag ended!");
 }
 
-onDrop(event:DndDropEvent, basketId:String) {
+onDrop(event:DndDropEvent, basketId:number) {
 
   this.lastDropEvent = event;
   this.dragString = event.data;
   this.args = this.dragString.split(" ");
   alert(`A fruit was passed to ${basketId}`); //testing only. it works!
-  alert(`${this.dragString} passed to event handler. ${this.args[0]} ${this.args[1]}`); //this works too!
+  //FIXME!
+  this.passedFruit.setBasketid(basketId);
+  //get species
+  this.passedFruit.setSpecies(`${this.args[1]}`);
+  //get color
+  this.passedFruit.setColor(`${this.args[0]}`);
+  alert(`${this.dragString} passed to event handler.`); //whole thing works now. can call the service.
+  this.fs.insertFruit(this.passedFruit).subscribe(
+
+    data => {
+      console.log(data);
+      alert("Fruit successfully added."); //fruit succesfully added.
+      this.getAllBaskets(); //update DOM
+  },
+
+    error => {
+      error = "Sorry. Something didn't quite work.";
+      console.log(error);
+      alert("That basket is full. Add to a different one or take a fruit out.");
+    }
+
+  )
 }
 
 //show tutorial overlay
@@ -360,6 +379,47 @@ tutorialOff() {
   document.getElementById("tutText6").style.visibility = "hidden";
   document.getElementById("tutText7").style.visibility = "hidden";
   document.getElementById("overlay").style.height = "0%";
+}
+
+// sorting functions to replace the insufficient ascii sorting
+//im not sure this is going to work, tbh. I'll leave it as an example.
+swap(items, leftIndex, rightIndex){
+  var temp = items[leftIndex];
+  items[leftIndex] = items[rightIndex];
+  items[rightIndex] = temp;
+}
+
+partition(items, left, right) {
+  var pivot   = items[Math.floor((right + left) / 2)], //middle element
+      i = left, //left pointer
+      j = right; //right pointer
+  while (i <= j) {
+      while (items[i] < pivot) {
+          i++;
+      }
+      while (items[j] > pivot) {
+          j--;
+      }
+      if (i <= j) {
+          this.swap(items, i, j); //sawpping two elements
+          i++;
+          j--;
+      }
+  }
+  return i;
+}
+
+quickSort(items, left, right) {
+  var index;
+  if (items.length > 1) {
+      index = this.partition(items, left, right); //index returned from partition
+      if (left < index - 1) { //more elements on the left side of the pivot
+          this.quickSort(items, left, index - 1);
+      }
+      if (index < right) { //more elements on the right side of the pivot
+          this.quickSort(items, index, right);
+      }
+  }
 }
 
 }
