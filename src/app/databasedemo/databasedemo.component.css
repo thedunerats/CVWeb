@@ -13,7 +13,7 @@ other events as well. to be implemented in the future.
     min-height: 100%; /* Need this to cover the whole page. Background size only covers what exists. */
     /*^ this is more effective that using height: 100%. */
     background-size: 400%;
-    animation: bg-animation 15s infinite alternate;
+    animation: bg-animation 15s infinite alternate; /* corresponds to the animation below.*/
   }
 
   @keyframes bg-animation{
@@ -26,9 +26,11 @@ other events as well. to be implemented in the future.
   }
   
   /* drop zones*/
-  .basketContainer {
-    height: 26px;
+  .fruitBasket{
+    max-width:100%; /* these 2 properties keep the asset inside the div.*/
+    max-height:100%;
   }
+  
 
   .my-dropzone {
     padding: 8px;
@@ -41,6 +43,18 @@ other events as well. to be implemented in the future.
     transform: scale(1.05);
   }
 
+  /*draggables */
+  .dragFruit{
+    max-width:100px; /* these 2 properties keep the asset inside the div.*/
+    max-height:100%;
+  }
+
+  td.dragRow{
+    width: 150px;
+  }
+  div.dragRow{
+    max-width: 150px;
+  }
 
   .overlay { /* hidden tutorial overlay div*/
     position: fixed; /* Sit on top of the page content */

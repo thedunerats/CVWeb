@@ -22,9 +22,81 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
 
 <!--FIXME: add something that cues the user into being able to click on and interact with the baskets.-->
 
+
 <!--I think we need to justmake the whole table ngfor. rather than calling it every time. See if it works. it does.-->
 <!--we will need to add event binding / collapsible templates going forward. That ought to work.-->
 <div id = "main" class = "bg">
+
+<!--Let's do the experimental drag and drop here.-->
+<!--May do Ngfor for the baskets. Will work on that later. need that to be droppable. and sortable.-->
+<!--Will also change the placement of everything once we know it all works.-->
+<!--CURRENTLY IMPLEMENTING: Drop zone with detection event-->
+
+
+ <!--CDK assumes vertical by default. -->
+ <!--FIXME: bottom list still re-arranging. Also, don't want to drag top row but maintain it as a drop
+zone. don't really want the top re-arranging either.-->
+<!--UPDATE: top doesn't drag anymore. But we don't want it moving during the hover event.-->
+<table class = "container justify-content-center">
+    <tbody>
+        <tr>
+            <td *ngFor = "let b of baskets"> <!--Drop containers-->
+                <section fxFlex
+                fxLayout="column"
+                fxLayoutAlign="center center"
+                class="my-dropzone scrollable"
+                dndDropzone
+                dndDragoverClass="custom-drag-over"
+                [dndDisableIf]="!dropzoneEnabled"
+                (dndDrop)="onDrop($event,this.b.basketId)">
+
+                <img class = "fruitBasket" src = "/assets/images/clipart-fruit-basket-2.png">
+
+                </section>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table class = "container justify-content-center">
+    
+    <tr> <!--Draggables-->
+        <td *ngFor = "let draggable of draggables"
+        class = "dragRow"
+        [dndDraggable]="draggable.content"
+        [dndEffectAllowed]="draggable.effectAllowed"
+        [dndDisableIf]="draggable.disable"
+        (dndStart)="onDragStart($event)"
+        (dndCopied)="onDragged($event, 'copy')"
+        (dndLinked)="onDragged($event, 'link')"
+        (dndMoved)="onDragged($event, 'move')"
+        (dndCanceled)="onDragged($event, 'none')"
+        (dndEnd)="onDragEnd($event)">
+        <ng-container [ngSwitch] = "draggable.content">
+            <div class = "dragRow" *ngSwitchCase = "'Red Apple'">
+                <img src = "/assets/images/apple-and-orange-seeds-clipart-2.png"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Orange Orange'">
+                <img src = "/assets/images/apple-and-orange-seeds-clipart-15.png"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Yellow Lemon'">
+                <img src = "/assets/images/apple-orange-lemon-clipart-19.png"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Green Lime'">
+                <img src = "/assets/images/Lime.svg"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Purple Grapes'">
+                <img src = "/assets/images/grapes.svg"
+                class = "dragFruit">
+            </div>
+        </ng-container>
+        </td>
+    </tr>
+    
+</table>
 
 <table layout="row" class = "container justify-content-center">
     <tbody >
@@ -92,65 +164,19 @@ Sort of. You can call it like a variable elsewhere within the DOM. It won't be d
 </table>
 <br>
 
-<!--Let's do the experimental drag and drop here.-->
-<!--May do Ngfor for the baskets. Will work on that later. need that to be droppable. and sortable.-->
-<!--Will also change the placement of everything once we know it all works.-->
-<!--CURRENTLY IMPLEMENTING: Drop zone with detection event-->
-
-
- <!--CDK assumes vertical by default. -->
- <!--FIXME: bottom list still re-arranging. Also, don't want to drag top row but maintain it as a drop
-zone. don't really want the top re-arranging either.-->
-<!--UPDATE: top doesn't drag anymore. But we don't want it moving during the hover event.-->
-<table class = "container justify-content-center">
-    <tbody>
-        <tr>
-            <td *ngFor = "let b of baskets"> <!--Drop containers-->
-                <section fxFlex
-                fxLayout="column"
-                fxLayoutAlign="center center"
-                class="my-dropzone scrollable"
-                dndDropzone
-                dndDragoverClass="custom-drag-over"
-                [dndDisableIf]="!dropzoneEnabled"
-                (dndDrop)="onDrop($event,this.b.basketId)">
-
-                <pre *ngIf="lastDropEvent">{{ lastDropEvent | json }}</pre>
-
-                </section>
-            </td>
-        </tr>
-        <tr> <!--Draggables-->
-            <td *ngFor = "let draggable of draggables"
-            [dndDraggable]="draggable.content"
-            [dndEffectAllowed]="draggable.effectAllowed"
-            [dndDisableIf]="draggable.disable"
-            (dndStart)="onDragStart($event)"
-            (dndCopied)="onDragged($event, 'copy')"
-            (dndLinked)="onDragged($event, 'link')"
-            (dndMoved)="onDragged($event, 'move')"
-            (dndCanceled)="onDragged($event, 'none')"
-            (dndEnd)="onDragEnd($event)">
-            draggable ({{draggable.effectAllowed}})
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-
-
 <!--Let's add a form for adding fruits.-->
+<!----    
 <h1 class = "d-flex justify-content-center">Add a new fruit here!</h1>
 <h3 class = "d-flex justify-content-center">Make sure the basket number matches one of the baskets above.</h3>
 <div class = "fruitCreation" id = "fruit-form">
     <form class = "container justify-content-center" #fruitForm="ngForm" (ngSubmit)="insertFruit(fruitForm)">
-                                <!--This will contain the form data. NOTE: you NEED the ngModel in the input tags.-->
+            ---This will contain the form data. NOTE: you NEED the ngModel in the input tags.
         <input type="text" class="form-control" name = "fruitcolor" id = "fruitColor" placeholder="Color of Fruit" ngModel>
         <input type="text" class="form-control" name = "fruitspecies" id = "fruitSpecies" placeholder="Species of Fruit" ngModel>
         <input type="text" class="form-control" name = "basketnumber" id = "basketNumber" placeholder="Choose a basket number:" ngModel>
         <button type="submit" class="d-flex btn btn-primary justify-content-center">Add fruit!</button>
     </form>
-</div>
+</div> ---->
 
 
 <!--
@@ -162,6 +188,9 @@ the front end?-->
 <button (click)="createNewBasket()" class="d-flex btn btn-primary justify-content-center">Create a New Fruit Basket!</button>
 <!--might need to make a div for the style with ngStyle.-->
 <button (click)="tutorialOn()">Need help?</button> <!--Triggers tutorial overlay-->
+
+<!--- This picture renders without issue. But it's too large.
+<img class = "fruitBasket" src = "/assets/images/clipart-fruit-basket-2.png">-->
 
 </div>
 

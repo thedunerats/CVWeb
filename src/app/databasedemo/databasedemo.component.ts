@@ -70,10 +70,22 @@ export class DatabasedemoComponent implements OnInit {
       handle: false,
     },
     {
-      content: "Yellow Banana",
+      content: "Yellow Lemon",
       effectAllowed: "link",
       disable: false,
       handle: false
+    },
+    {
+      content: "Green Lime",
+      effectAllowed: "move",
+      disable: false,
+      handle: false,
+    },
+    {
+      content: "Purple Grapes",
+      effectAllowed: "move",
+      disable: false,
+      handle: false,
     }
   ];
   //these are ngx dnd variables.
