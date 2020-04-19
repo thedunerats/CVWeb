@@ -25,10 +25,17 @@ other events as well. to be implemented in the future.
     }
   }
   
+  .description{
+    text-align: center;
+  }
+
   /* drop zones*/
   .fruitBasket{
     max-width:100%; /* these 2 properties keep the asset inside the div.*/
     max-height:100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
   }
   
 
@@ -47,6 +54,9 @@ other events as well. to be implemented in the future.
   .dragFruit{
     max-width:100px; /* these 2 properties keep the asset inside the div.*/
     max-height:100%;
+    margin-left: auto; /* these 3 center an image? */
+    margin-right: auto;
+    display: block;
   }
 
   td.dragRow{
@@ -55,6 +65,42 @@ other events as well. to be implemented in the future.
   div.dragRow{
     max-width: 150px;
   }
+
+  /* Fruits in baskets */
+  
+  /*Form that contains the deletable fruits*/
+  .deleteable
+  {
+    margin-left: 110px;
+    margin-right: 110px;
+  }
+
+  /*Fruit images */
+  .basketFruit{
+    height: 35px;
+    width: 40px;
+  }
+
+/* HIDE RADIO */
+[type=radio] { 
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio] + img {
+  cursor: pointer;
+}
+
+/* CHECKED STYLES */
+[type=radio]:checked + img {
+  background-color: blueviolet;
+  transition: 0.01s ease-in-out;
+  box-shadow:  6px black;
+  border-radius: 4px;
+}
 
   .overlay { /* hidden tutorial overlay div*/
     position: fixed; /* Sit on top of the page content */
@@ -71,7 +117,7 @@ other events as well. to be implemented in the future.
     transition: height 0.5s ease-out;
   }
 
-  .backText{
+  .backText{ /* Tutorial text */
     color: greenyellow;
     visibility: hidden;
     transition: 0.15s ease-in;
