@@ -1,0 +1,27 @@
+.bg{
+    /*might pseudocode this image later, but will leave it for reference. */ 
+    /*background-image: url(/assets/images/orange_background.jpg); */
+    background-image: url(/assets/images/home-background.png);
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100%; /* Need this to cover the whole page. Background size only covers what exists. */
+    /*^ this is more effective that using height: 100%. */
+  }
+
+  nav{
+    border-radius: 0 0 3px 3px;
+  }
+
+  .profPic{
+    width: 80px;
+    height: 120px;
+    margin-left: 20px;
+    border-radius: 2px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+
+  .headText{
+    color: white;
+  }
