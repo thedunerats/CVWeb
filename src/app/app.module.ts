@@ -13,6 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TrafficsimComponent } from './trafficsim/trafficsim.component';  // you needed this.
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DndModule } from 'ngx-drag-drop';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { DndModule } from 'ngx-drag-drop';
     FormsModule, //hand typed.
     ReactiveFormsModule, // hand typed.
     DragDropModule,
-    DndModule
+    DndModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
