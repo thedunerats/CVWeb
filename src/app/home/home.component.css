@@ -1,4 +1,4 @@
-.bg{
+.bg{ /* background */
     /*might pseudocode this image later, but will leave it for reference. */ 
     /*background-image: url(/assets/images/orange_background.jpg); */
     background-image: url(/assets/images/home-background.png);
@@ -19,9 +19,27 @@
     height: 120px;
     margin-left: 20px;
     border-radius: 2px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19); /* from w3 schools */
   }
 
-  .headText{
+  .headText{ /*Text at top near photo */
     color: white;
+  }
+
+  thead{ /*headers for sections */
+    background: pink;
+    width: max-content;
+  }
+
+  tbody{ /*backgrounds for experiences */
+    background: white;
+  }
+
+  p{ /* inner entry text */
+    padding-bottom: 0px;
+    height: 7px;
+  }
+
+  li{
+    text-align: left;
   }
