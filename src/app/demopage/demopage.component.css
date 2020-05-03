@@ -1,0 +1,11 @@
+.bg{
+    /*background-image: url(/assets/images/orange_background.jpg); */
+    background-image: url(/assets/images/home-background.png);
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100%; /* Need this to cover the whole page. Background size only covers what exists. */
+    /*^ this is more effective that using height: 100%. */
+    z-index: -1;
+}
