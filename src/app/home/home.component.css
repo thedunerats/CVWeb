@@ -8,6 +8,7 @@
     background-size: cover;
     min-height: 100%; /* Need this to cover the whole page. Background size only covers what exists. */
     /*^ this is more effective that using height: 100%. */
+    z-index: -1;
   }
 
   nav{
@@ -25,10 +26,14 @@
   .headText{ /*Text at top near photo */
     color: white;
   }
-
+  
   thead{ /*headers for sections */
     background: pink;
     width: max-content;
+  }
+
+  table{
+    border: 1px solid black;
   }
 
   tbody{ /*backgrounds for experiences */
@@ -42,4 +47,22 @@
 
   li{
     text-align: left;
+  }
+
+  span{ /*text at bottom*/
+    color: white;
+    font-size: 20px;
+  }
+
+  /*icons at the bottom */
+  fa-icon{
+    color: grey;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 10px;
+    font-size: 50px;
+  }
+
+  fa-icon:hover{
+    color: white;
   }

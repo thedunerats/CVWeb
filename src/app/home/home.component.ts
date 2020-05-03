@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+library.add(faLinkedin, faGithub);
 
 @Component({
   selector: 'app-home',
@@ -12,4 +16,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
   }
 
+  //databinding for icons
+  LinkedInIcon = faLinkedin;
+  GithubIcon = faGithub;
 }
