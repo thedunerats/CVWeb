@@ -1,0 +1,237 @@
+
+<!--This is where the basket demo will go.
+Let's construct a skeleton first.
+We will style it once we know that it works and try to create more than one.
+We will need to do an onInit that gets all the baskets.
+But first we need to delete one of the 4 baskets since we only want 3 maximum.-->
+
+<!--Should we make a new db instance and disable the old one?
+might try it. maybe we will do that down the line.-->
+
+<!--Let's create the structure to support 3 different baskets.-->
+<!--Plan of action: Unordered list, then size it with a style tag?-->
+<!--Try it with a basket first and then expand on it. a little at a time.-->
+
+<!--Might wrap this whole thing up in an Ngcontainer. Need to see what it
+and the NgTemplate do first. You need one if you have an ngif inside an ngfor.
+The search component on whos in provides an example of a container,
+ngif with cases in the if statement and maybe ngswitch.-->
+
+<!--Does an ngtemplate act as a frame and draw a new set of boundary lines in which to render html elements? its possible.
+Sort of. You can call it like a variable elsewhere within the DOM. It won't be displayed unless we explicitly call it.-->
+
+<!--FIXME: add something that cues the user into being able to click on and interact with the baskets.-->
+
+
+<!--I think we need to justmake the whole table ngfor. rather than calling it every time. See if it works. it does.-->
+<!--we will need to add event binding / collapsible templates going forward. That ought to work.-->
+<div id = "main" class = "bg">
+
+    <nav class="navbar navbar-expand-md navbar-light bg-danger">
+        <a class="navbar-brand" href="./">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/app-demopage">Demos <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+<br>
+<!--Let's do the experimental drag and drop here.-->
+<!--May do Ngfor for the baskets. Will work on that later. need that to be droppable. and sortable.-->
+<!--Will also change the placement of everything once we know it all works.-->
+<!--CURRENTLY IMPLEMENTING: Drop zone with detection event-->
+
+
+ <!--CDK assumes vertical by default. -->
+ <!--FIXME: bottom list still re-arranging. Also, don't want to drag top row but maintain it as a drop
+zone. don't really want the top re-arranging either.-->
+<table class = "container d-flex justify-content-center">
+    
+    <tr> <!--Draggables-->
+        <td *ngFor = "let draggable of draggables"
+        class = "dragRow"
+        [dndDraggable]="draggable.content"
+        [dndEffectAllowed]="draggable.effectAllowed"
+        [dndDisableIf]="draggable.disable"
+        (dndStart)="onDragStart($event)"
+        (dndCopied)="onDragged($event, 'copy')"
+        (dndLinked)="onDragged($event, 'link')"
+        (dndMoved)="onDragged($event, 'move')"
+        (dndCanceled)="onDragged($event, 'none')"
+        (dndEnd)="onDragEnd($event)">
+        <ng-container [ngSwitch] = "draggable.content">
+            <div class = "dragRow" *ngSwitchCase = "'Red Apple'">
+                <img src = "/assets/images/apple-svgrepo-com.svg"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Orange Orange'">
+                <img src = "/assets/images/orange_light.svg"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Yellow Lemon'">
+                <img src = "/assets/images/lemon_light.svg"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Green Lime'">
+                <img src = "/assets/images/lime_light.svg"
+                class = "dragFruit">
+            </div>
+            <div class = "dragRow" *ngSwitchCase = "'Purple Grapes'">
+                <img src = "/assets/images/grapes-svgrepo-com.svg"
+                class = "dragFruit">
+            </div>
+        </ng-container>
+        </td>
+    </tr>
+    
+</table>
+<!--UPDATE: top doesn't drag anymore. But we don't want it moving during the hover event.-->
+<table class = "container justify-content-center">
+    <tbody>
+        <tr>
+            <td *ngFor = "let b of baskets"> <!--Drop containers-->
+                <section fxFlex
+                fxLayout="column"
+                fxLayoutAlign="center center"
+                class="my-dropzone scrollable"
+                dndDropzone
+                dndDragoverClass="custom-drag-over"
+                [dndDisableIf]="!dropzoneEnabled"
+                (dndDrop)="onDrop($event,this.b.basketId)">
+
+                <img class = "fruitBasket" src = "/assets/images/clipart-fruit-basket-2.png">
+
+                </section>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table layout="row" class = "container justify-content-center">
+    <tbody >
+        <tr> <!--You needed to iterate the ngFor through the columns each time. It works now.-->
+            <td class = "description" *ngFor="let b of baskets">Basket {{b.basketId}} contains {{b.fruitsContained}} fruits.</td>
+        </tr>
+        <!--Forms will correspond to the baskets / fruits. 
+            Might need a template to make it clickable / collapsible too.
+            Use the search component, ngcontainer and ngtemplate as a guide. 
+            Would use ngIf, a clicked event, and make the drop down if its clicked.
+            Put a note inside so that the user knows to click to hide it.-->
+        <tr> <!--display the fruits here. I think we can pass parameters into functions through the html. look into it.-->
+            <td *ngFor = "let f of fruitDisplay">
+                <!--need fruits and buttons here in an ngtemplate, inside and ngcontainer-->
+                <!--note: brett put a whole other tbody inside.-->
+                <!--let's start with adding a button inside to add fruit. then we will add fruit.-->
+                <!--Let's not break this again. At least until we have a better idea of what's happening.-->
+                <!---the 2 ngContainers didn't realy make a big difference. Maybe we can fix it later? might remove later.-->
+                        <form class = "fruit-deletion d-flex justify-content-center" id = "fruit-selection" #deleteForm = "ngForm" (ngSubmit) = "deleteFruit(deleteForm)">    
+                            <tbody> <!--Have an animation control this part.-->
+                                <!--need to do ngFor on the rows with the fruits. Let's try adding one. Might put the for in this tbody.-->
+                                    <!--might put another TR above this with an NgFor container encapsulating it for the fruit.-->
+                                    <!--Rather than having 3 forms, we will input the basket number in as well. Let's have only 1 form.
+                                    3 forms is just going to be a nightmare.-->
+                                    <!--Think about displaying the fruits as radio buttons for deleting.-->
+                                
+                                <!--FIXME: might need an ngIf to disable fruit button if there's no fruit in basket.
+                                Going to try completely disabling the whole thing if no fruit.-->  
+                                <!---ALSO: loads in the wrong column about half the time. Not sure why.
+                                Still doesn't work after adding the NgIf.-->      
+                                <ng-container *ngFor = "let i of f">         
+                                    <tr> <!--f is an array. need to pull out one element of f. need to use b and in index too-->
+                                        <div class = "d-flex justify-content-center">
+                                        <!--Works!-->
+                                        <!--turn this into a radio button list-->
+                                        <!--f is the fruit display object, i is the index-->
+                                        <!--{{i.id in the label worked, just for reference.}}-->
+                                        <label class = "radio-inline">
+                                            <input type = "radio" value = "{{i.id}}" name = "fruitId" ngModel>
+                                            <ng-container [ngSwitch] = "i.species">
+                                                <img *ngSwitchCase = "'Apple'" src = "/assets/images/apple-svgrepo-com.svg"
+                                                class = "basketFruit">
+                                                <img *ngSwitchCase = "'Orange'" src = "/assets/images/orange_light.svg"
+                                                class = "basketFruit">
+                                                <img *ngSwitchCase = "'Lemon'" src = "/assets/images/lemon_light.svg"
+                                                class = "basketFruit">
+                                                <img *ngSwitchCase = "'Lime'" src = "/assets/images/lime_light.svg"
+                                                class = "basketFruit">
+                                                <img *ngSwitchCase = "'Grapes'" src = "/assets/images/grapes-svgrepo-com.svg"
+                                                class = "basketFruit">
+                                            </ng-container>
+                                        </label>  
+                                        </div>   
+                                    </tr>
+                                </ng-container>   
+                                    <tr>
+                                        <td class = "submitFruit">
+                                             <!--Almost have it. Flipping the sign disables all of them.-->
+                                            <button [hidden] = "!(f.length > 0)" type = "submit">Remove Fruit</button>
+                                        </td>
+                                    </tr>
+                            </tbody>
+                        </form>  
+            </td>
+        </tr>
+        <tr> <!--form for adding / removing fruit and baskets. I think this needs to be a form if things are moving.-->
+            <td *ngFor="let b of baskets"> 
+                <div class = "d-flex justify-content-center">
+                <button (click)="removeBasket(this.b.basketId, this.b.fruitsContained)">Click Here to delete this basket.</button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+
+<!--Let's add a form for adding fruits.-->
+<!----    
+<h1 class = "d-flex justify-content-center">Add a new fruit here!</h1>
+<h3 class = "d-flex justify-content-center">Make sure the basket number matches one of the baskets above.</h3>
+<div class = "fruitCreation" id = "fruit-form">
+    <form class = "container justify-content-center" #fruitForm="ngForm" (ngSubmit)="insertFruit(fruitForm)">
+            ---This will contain the form data. NOTE: you NEED the ngModel in the input tags.
+        <input type="text" class="form-control" name = "fruitcolor" id = "fruitColor" placeholder="Color of Fruit" ngModel>
+        <input type="text" class="form-control" name = "fruitspecies" id = "fruitSpecies" placeholder="Species of Fruit" ngModel>
+        <input type="text" class="form-control" name = "basketnumber" id = "basketNumber" placeholder="Choose a basket number:" ngModel>
+        <button type="submit" class="d-flex btn btn-primary justify-content-center">Add fruit!</button>
+    </form>
+</div> ---->
+
+
+<!--
+We also need to add the capacity to create / destroy baskets. (do that below)
+The button to destroy will correspond to the basket itself.
+Don't forget to add error handling here. dont want too many baskets.
+Don't want too few either. do we want to handle this on the back or
+the front end?-->
+<div class = "d-flex justify-content-center">
+    <button (click)="createNewBasket()" class="d-flex btn btn-primary justify-content-center">Create a New Fruit Basket!</button>
+    <!--might need to make a div for the style with ngStyle.-->
+    <button (click)="tutorialOn()" class = "d-flex btn btn-primary justify-content-center">Need help?</button> <!--Triggers tutorial overlay-->
+</div>
+<!--- This picture renders without issue. But it's too large.
+<img class = "fruitBasket" src = "/assets/images/clipart-fruit-basket-2.png">-->
+
+</div>
+
+<div id = "overlay" class = "overlay" (click)="tutorialOff()">
+    <h2 id = "tutText0" class = "backText d-flex justify-content-center">Welcome to the Graphical Database Demonstration!</h2>
+    <h2 id = "tutText1" class = "backText d-flex justify-content-center">Each of these fruit baskets persists the data that users send to it between interactions.</h2>
+    <!--will replace with the basket graphic once I make it.-->
+    <h2 id = "tutText2" class = "backText d-flex justify-content-center">You can create baskets by pressing the button labeled "Create a New Fruit Basket!".</h2>
+    <h2 id = "tutText3" class = "backText d-flex justify-content-center">Add fruits by dragging them from the palette and dropping them directly into the baskets.</h2>
+    <!--Replace with fruit graphics later.-->
+    <h2 id = "tutText4" class = "backText d-flex justify-content-center">The changes you make to the baskets will persist, even if you reload the web page.</h2>
+    <h2 id = "tutText5" class = "backText d-flex justify-content-center">The baskets even update in real time!</h2>
+    <h2 id = "tutText6" class = "backText d-flex justify-content-center">Try it for yourself!</h2>
+    <br>
+    <h2 id = "tutText7" class = "backText d-flex justify-content-center">Click to exit this tutorial.</h2>
+</div> <!--Overlay div-->
