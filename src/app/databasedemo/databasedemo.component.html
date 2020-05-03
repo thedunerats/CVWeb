@@ -70,23 +70,23 @@ zone. don't really want the top re-arranging either.-->
         (dndEnd)="onDragEnd($event)">
         <ng-container [ngSwitch] = "draggable.content">
             <div class = "dragRow" *ngSwitchCase = "'Red Apple'">
-                <img src = "/assets/images/apple-and-orange-seeds-clipart-2.png"
+                <img src = "/assets/images/apple-svgrepo-com.svg"
                 class = "dragFruit">
             </div>
             <div class = "dragRow" *ngSwitchCase = "'Orange Orange'">
-                <img src = "/assets/images/apple-and-orange-seeds-clipart-15.png"
+                <img src = "/assets/images/orange_light.svg"
                 class = "dragFruit">
             </div>
             <div class = "dragRow" *ngSwitchCase = "'Yellow Lemon'">
-                <img src = "/assets/images/apple-orange-lemon-clipart-19.png"
+                <img src = "/assets/images/lemon_light.svg"
                 class = "dragFruit">
             </div>
             <div class = "dragRow" *ngSwitchCase = "'Green Lime'">
-                <img src = "/assets/images/Lime.svg"
+                <img src = "/assets/images/lime_light.svg"
                 class = "dragFruit">
             </div>
             <div class = "dragRow" *ngSwitchCase = "'Purple Grapes'">
-                <img src = "/assets/images/grapes.svg"
+                <img src = "/assets/images/grapes-svgrepo-com.svg"
                 class = "dragFruit">
             </div>
         </ng-container>
@@ -155,15 +155,15 @@ zone. don't really want the top re-arranging either.-->
                                         <label class = "radio-inline">
                                             <input type = "radio" value = "{{i.id}}" name = "fruitId" ngModel>
                                             <ng-container [ngSwitch] = "i.species">
-                                                <img *ngSwitchCase = "'Apple'" src = "/assets/images/apple-and-orange-seeds-clipart-2.png"
+                                                <img *ngSwitchCase = "'Apple'" src = "/assets/images/apple-svgrepo-com.svg"
                                                 class = "basketFruit">
-                                                <img *ngSwitchCase = "'Orange'" src = "/assets/images/apple-and-orange-seeds-clipart-15.png"
+                                                <img *ngSwitchCase = "'Orange'" src = "/assets/images/orange_light.svg"
                                                 class = "basketFruit">
-                                                <img *ngSwitchCase = "'Lemon'" src = "/assets/images/apple-orange-lemon-clipart-19.png"
+                                                <img *ngSwitchCase = "'Lemon'" src = "/assets/images/lemon_light.svg"
                                                 class = "basketFruit">
-                                                <img *ngSwitchCase = "'Lime'" src = "/assets/images/Lime.svg"
+                                                <img *ngSwitchCase = "'Lime'" src = "/assets/images/lime_light.svg"
                                                 class = "basketFruit">
-                                                <img *ngSwitchCase = "'Grapes'" src = "/assets/images/grapes.svg"
+                                                <img *ngSwitchCase = "'Grapes'" src = "/assets/images/grapes-svgrepo-com.svg"
                                                 class = "basketFruit">
                                             </ng-container>
                                         </label>  
