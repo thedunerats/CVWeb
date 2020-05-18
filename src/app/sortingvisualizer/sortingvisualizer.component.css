@@ -1,0 +1,12 @@
+.visualCol{
+    margin-top: 10px; /* spacing away from everything else*/
+    margin-left: 1px;
+    margin-right: 1px;
+    width: 3px;
+    background-color: black;
+}
+
+.simulationContainer{
+    height: 300px;
+    transform: rotate(180deg) scaleX(-1); /*rotates and creates mirror image */
+}
