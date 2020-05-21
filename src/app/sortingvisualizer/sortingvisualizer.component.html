@@ -1,4 +1,3 @@
-<p>sortingvisualizer works!</p>
 <button (click) = "randomizeArray(this.pageArray)">Randomize Array</button>
 <button (click) = "bubbleSort(this.pageArray)">Bubble Sort</button>
 <button (click) = "insertionSort(this.pageArray)">Insertion Sort</button>
@@ -8,5 +7,5 @@
 <!--the challenge here is updating the DOM / colors in just the right places.-->
 
 <div class = "row d-flex justify-content-center simulationContainer">
-    <div class = "column visualCol" *ngFor = "let p of pageArray" [ngStyle] = "{'height': p+'px'}"></div>
+    <div class = "column visualCol" attr.id = "{{p}}" *ngFor = "let p of pageArray" [ngStyle] = "{'height': p+'px'}"></div>
 </div>

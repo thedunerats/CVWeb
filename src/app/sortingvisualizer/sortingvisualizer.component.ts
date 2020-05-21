@@ -36,17 +36,28 @@ export class SortingvisualizerComponent implements OnInit {
   }
 
   randomizeArray(array: number[]){
+    //generates a new array
+    this.pageArray = [];
+    for(let i = 0; i < 39; i++){ //array of size 40
+      this.pageArray.push(Math.round(Math.random() * 40)); //add a random number between 0 and 40
+    }
+    /* randomizes an already existing array
     for(let i = array.length - 1; i > 0; i--){
       const j = Math.floor(Math.random() * i);
       const temp = array[i];
       array[i] = array[j];
       array[j] = temp;
-    }
+      
+    }*/
+  }
+
+  sleep(milliseconds) { //custom synchronous delay method
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
   }
 
   //SORTING FUNCTIONS
   //bubblesort
-  bubbleSort(array: number[]){
+ async bubbleSort(array: number[]){
 
     for(let i = 0; i < array.length; i++) {
         for(let j = 0; j < array.length - 1; j++) {
@@ -54,6 +65,7 @@ export class SortingvisualizerComponent implements OnInit {
             if(array[j] > array[j + 1]) {
                 let swap = array[j];
                 array[j] = array[j + 1];
+                await this.sleep(50);
                 array[j + 1] = swap;
             }
         }
