@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ɵConsole } from '@angular/core';
 
 @Component({
   selector: 'app-sortingvisualizer',
@@ -23,6 +23,12 @@ export class SortingvisualizerComponent implements OnInit {
   pageArray: number[] = [];
   colorArray: string[] = [];
 
+  //temp for mergesort
+  temp: number[] = [];
+
+  //test array for comparison
+  testArray: number[] = [];
+
   //functions we need:
   //sorting algorithms
   //functions to highlight the columns
@@ -31,9 +37,15 @@ export class SortingvisualizerComponent implements OnInit {
   //Util functions
   fillArray(){
     for(let i = 0; i < 39; i++){ //array of size 40
-      this.pageArray.push(Math.round(Math.random() * 40)); //add a random number between 0 and 40
+      this.pageArray.push(Math.round(Math.random() * 40)); //add a random number between 0 and 39
       this.colorArray.push("black"); //ensures same size as pageArray
     }
+    for(let w = 0; w < this.pageArray.length; w++){
+      this.testArray.push(this.pageArray[w]);
+    }
+    this.testArray.sort(function(a, b){return a - b}); //create a comparison for testing
+    //NOTE: the above callback is necessary to compensate for ASCII sorting.
+
     console.log(this.pageArray);
     console.log(this.colorArray);
   }
@@ -42,10 +54,17 @@ export class SortingvisualizerComponent implements OnInit {
     //generates a new array
     this.pageArray = [];
     this.colorArray = [];
+    this.testArray = [];
+    this.temp = []; //resetting merge sort
     for(let i = 0; i < 39; i++){ //array of size 40
       this.pageArray.push(Math.round(Math.random() * 40)); //add a random number between 0 and 40
       this.colorArray.push("black");
     }
+    for(let w = 0; w < this.pageArray.length; w++){
+      this.testArray.push(this.pageArray[w]);
+    }
+    this.testArray.sort(function(a, b){return a - b}); //reset comparison for testing
+    console.log(this.testArray);
     /* randomizes an already existing array
     for(let i = array.length - 1; i > 0; i--){
       const j = Math.floor(Math.random() * i);
@@ -167,28 +186,31 @@ async insertionSort(arr:number[]){
 
     this.shade(leftIndex,"black"); //undoing the swap coloration
     this.shade(rightIndex,"black");
-    await this.sleep(10);
+    await this.sleep(50);
   }
   
   async partition(items: number[], left: number, right: number) {
     var pivot = items[Math.floor((right + left) / 2)], //middle element
         i = left, //left pointer
         j = right; //right pointer. both of these are arbitrary? check.
+
+        this.shade(pivot,"yellow"); //shade the pivot value
+        await this.sleep(10);
     while (i <= j) {
         while (items[i] < pivot) {
-            this.shade(i,"blue");
-            await this.sleep(25); //iterate through
+            //this.shade(i,"blue");
+            //await this.sleep(25); //iterate through
 
-            this.shade(i,"black");
-            await this.sleep(10); //iterate through
+            //this.shade(i,"black");
+            //await this.sleep(10); //iterate through
             i++;
         }
         while (items[j] > pivot) {
-          this.shade(j,"blue");
-          await this.sleep(25); //iterate through
+          //this.shade(j,"blue");
+          //await this.sleep(25); //iterate through
 
-          this.shade(j,"black");
-          await this.sleep(10); //iterate through
+          //this.shade(j,"black");
+          //await this.sleep(10); //iterate through
             j--;
         }
         if (i <= j) {
@@ -198,22 +220,106 @@ async insertionSort(arr:number[]){
             j--;
         }
     }
+    this.shade(pivot,"black"); //unshade pivot
+    await this.sleep(10);
+
     console.log(i);
     return i;
   }
   //you need the 3 inputs to do this recursively
   async quickSort(items: number[], left: number, right: number) { //left and right are the upper and lower bounds of the items array
+
     let index;
     if (items.length > 1) {
         index = await this.partition(items, left, right); //index returned from partition (as a promise)
-        console.log(index);
-        //await Promise.all([]) //FIXME: need quicksort calls inside
         if (left < index - 1) { //more elements on the left side of the pivot
+      
             await this.quickSort(items, left, index - 1);
         }
         if (index < right) { //more elements on the right side of the pivot
+          
             await this.quickSort(items, index, right);
         }
     }
   }
+
+// Merge Sort Implentation (Recursion)
+//FIXME: add a comparison at the end to reset temp when the whole thing finishes.
+//ned a sorted array to compare it to.
+ /**
+   * Recursively sorts and calls merge.
+   *
+   * @method mergeSort
+   * @param {Array} arr The array to be sorted.
+   * @param {Array} temp The temporary array.
+   * @param {Number} left The left index of the array.
+   * @param {Number} right The right index of the array.
+   */
+  async mergeSort(arr: number[], temp: number[], left: number, right: number){
+
+    if (left < right) {  // divide array if there is more than 2 elements
+      let center: number = Math.floor((left + right) / 2);
+      //shade center
+      this.shade(center,"yellow");
+      await this.sleep(50);
+
+      await this.mergeSort(arr, temp, left, center); //division of left side
+      await this.mergeSort(arr, temp, center + 1, right); //division of right side
+      await this.merge(arr, temp, left, center + 1, right); //merging of the newly formed pairs
+      //unshade center
+      this.shade(center,"black");
+      await this.sleep(50);
+    }
+
+  }
+
+  /**
+   * This method contains the logic to implement the merge step.
+   *
+   * @method merge
+   * @param {Array} arr The array to be sorted.
+   * @param {Array} temp The temporary array.
+   * @param {Number} left The left index of the array.
+   * @param {Number} right The first index of the right-divided array. 
+   * @param {Number} rightEnd The right most index of the array.     */
+  async merge(arr: number[], temp: number[], left: number, right: number, rightEnd: number){
+
+    let leftEnd: number = right - 1; //right end of the left-divided array
+    let k: number = left;
+
+    while (left <= leftEnd && right <= rightEnd) {
+      if (arr[left] <= arr[right]) {
+        this.shade(k,"red"); //testing
+        await this.sleep(50);
+        temp[k++] = arr[left++];
+      } else {
+        this.shade(k,"red"); //testing
+        await this.sleep(50);
+        temp[k++] = arr[right++]
+      }
+      this.shade(k-1,"black"); //testing
+      await this.sleep(10);
+    }
+
+    while (left <= leftEnd) {
+      temp[k++] = arr[left++];
+    }
+
+    while (right <= rightEnd) {
+      temp[k++] = arr[right++];
+    }
+
+    //re-add values from temp in ascending order
+    for (let i: number = 0; i < temp.length; i++) {
+      arr[i] = temp[i];
+      await this.sleep(50);
+    }
+
+    /*alternate implementation of the above in descending order:
+        for (let i: number = 0; i < temp.length; i++, rightEnd--) {
+      arr[rightEnd] = temp[rightEnd];
+    }
+    */
+  }
+  
 }
