@@ -178,7 +178,7 @@ async insertionSort(arr:number[]){
   async swap(items: number[], leftIndex: number, rightIndex: number){
     this.shade(leftIndex,"red"); //highlighting the swap
     this.shade(rightIndex,"red");
-    await this.sleep(25);
+    await this.sleep(50);
     
     var temp = items[leftIndex]; //perform the actual swap
     items[leftIndex] = items[rightIndex];
@@ -186,7 +186,7 @@ async insertionSort(arr:number[]){
 
     this.shade(leftIndex,"black"); //undoing the swap coloration
     this.shade(rightIndex,"black");
-    await this.sleep(50);
+    await this.sleep(25);
   }
   
   async partition(items: number[], left: number, right: number) {
@@ -321,5 +321,49 @@ async insertionSort(arr:number[]){
     }
     */
   }
+
+  //Heapsort
+  // create max heap
+  //heapifies the array and puts larget element at top
+  async heapSort(array: number[]) {
+    let size = array.length;
   
+    // build heapSort (rearrange array)
+    for (let i = Math.floor(size / 2 - 1); i >= 0; i--){
+      await this.heapify(array, size, i);
+    }
+    // one by one extract an element from heapSort
+    for (let i = size - 1; i >= 0; i--) {
+      // move current root to end
+      await this.swap(array,0,i);
+  
+      // call max heapify on the reduced heapSort
+      await this.heapify(array, i, 0);
+    }
+  }
+  
+  // to heapify a subtree rooted with node i which is an index in array[]
+  async heapify(array, size, i) {
+    let max = i; // initialize max as root
+    let left = (2 * i) + 1;
+    let right = (2 * i) + 2;
+  
+    // if left child is larger than root
+    if (left < size && array[left] > array[max]){
+      max = left;
+    }  
+    // if right child is larger than max
+    if (right < size && array[right] > array[max]){
+      max = right;
+    }
+    // if max is not root
+    if (max != i) {
+      // swap i and max
+      await this.swap(array,i,max);
+
+      // recursively heapify the affected sub-tree
+      await this.heapify(array, size, max)
+    }
+  }
+
 }
