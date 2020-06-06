@@ -138,6 +138,37 @@ export class SortingvisualizerComponent implements OnInit {
     console.log(this.pageArray);
   }
 
+  //SelectionSort
+  //finds smallest value and moves it to position i in loop
+  // arr[i] swaps with arr[0] if arr[i] < arr[0]
+  async selectionSort(arr){
+    let len = arr.length;
+    for (let i = 0; i < len; i++) {
+        let min = i;
+       
+
+        for (let j = i + 1; j < len; j++) {
+            if (arr[min] > arr[j]) {
+                min = j;
+            }
+        }
+        if (min !== i) {
+
+            this.shade(i,"red");
+            this.shade(min,"red"); //swap arr[i] and arr[min]
+            let tmp = arr[i];
+            arr[i] = arr[min];
+            arr[min] = tmp;
+            await this.sleep(50);
+
+            this.shade(i,"black");
+            this.shade(min,"black");
+            await this.sleep(10);
+        }
+
+    }
+}
+
   //InsertionSort
   //if a larger element is on the left side of the larger one, it moves the larger element up the index
   //REMEMBER: if you want to test your algorithm, run you test sort at the end, not at the beginning. 
@@ -365,5 +396,39 @@ async insertionSort(arr:number[]){
       await this.heapify(array, size, max)
     }
   }
+
+  async shellSort(arr: number[]) {
+      let increment = arr.length / 2; 
+      while (increment > 0) {
+          for (let i = increment; i < arr.length; i++) {
+              var j = i;
+              var temp = arr[i];
+      
+              while (j >= increment && arr[j-increment] > temp) {
+                  this.shade(j,"red"); //shade pre-swap
+                  this.shade(j-increment,"red");
+                  await this.sleep(10);
+
+                  arr[j] = arr[j-increment];
+
+                  this.shade(j,"black"); //unshade post-swap
+                  this.shade(j-increment,"black");
+                  await this.sleep(10);
+                  j = j - increment;
+
+              }
+      
+              arr[j] = temp;
+          }
+      
+          if (increment == 2) {
+              increment = 1;
+          } else {
+              increment = Math.floor(increment*5 / 11);
+          }
+      }
+    return arr;
+  }
+  
 
 }
