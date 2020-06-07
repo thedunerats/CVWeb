@@ -36,9 +36,9 @@ export class SortingvisualizerComponent implements OnInit {
 
   //Util functions
   fillArray(){
-    for(let i = 0; i < 39; i++){ //array of size 40
-      this.pageArray.push(Math.round(Math.random() * 40)); //add a random number between 0 and 39
-      this.colorArray.push("black"); //ensures same size as pageArray
+    for(let i = 0; i < 99; i++){ //array of size 40
+      this.pageArray.push(Math.round(Math.random() * 100)); //add a random number between 0 and 39
+      this.colorArray.push("white"); //ensures same size as pageArray
     }
     for(let w = 0; w < this.pageArray.length; w++){
       this.testArray.push(this.pageArray[w]);
@@ -56,15 +56,7 @@ export class SortingvisualizerComponent implements OnInit {
     this.colorArray = [];
     this.testArray = [];
     this.temp = []; //resetting merge sort
-    for(let i = 0; i < 39; i++){ //array of size 40
-      this.pageArray.push(Math.round(Math.random() * 40)); //add a random number between 0 and 40
-      this.colorArray.push("black");
-    }
-    for(let w = 0; w < this.pageArray.length; w++){
-      this.testArray.push(this.pageArray[w]);
-    }
-    this.testArray.sort(function(a, b){return a - b}); //reset comparison for testing
-    console.log(this.testArray);
+    this.fillArray();
     /* randomizes an already existing array
     for(let i = array.length - 1; i > 0; i--){
       const j = Math.floor(Math.random() * i);
@@ -79,7 +71,7 @@ export class SortingvisualizerComponent implements OnInit {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
   }
 
-  //need to make everything black by the end of the loop? color first, then delay.
+  //need to make everything white by the end of the loop? color first, then delay.
   // might even consider making the shade function async and calling sleep inside it.
   shade(id: number, color: string){
     //let index = id.toString();
@@ -131,8 +123,8 @@ export class SortingvisualizerComponent implements OnInit {
 
             }
           
-          this.shade(j,"black"); //continue iterating
-          this.shade(j+1, "black");
+          this.shade(j,"white"); //continue iterating
+          this.shade(j+1, "white");
         }
     }
     console.log(this.pageArray);
@@ -161,8 +153,8 @@ export class SortingvisualizerComponent implements OnInit {
             arr[min] = tmp;
             await this.sleep(50);
 
-            this.shade(i,"black");
-            this.shade(min,"black");
+            this.shade(i,"white");
+            this.shade(min,"white");
             await this.sleep(10);
         }
 
@@ -192,12 +184,12 @@ async insertionSort(arr:number[]){
        await this.sleep(10);
 
        arr[j+1] = arr[j]; //moves until element is smaller than the key value
-       this.shade(j,"black"); // uncoloring current column after move value to be moved
+       this.shade(j,"white"); // uncoloring current column after move value to be moved
        await this.sleep(10);
        j--;
     }
 
-    this.shade(i,"black");
+    this.shade(i,"white");
     arr[j+1] = key; //reassignment of key value to the current column
     await this.sleep(10);
     }
@@ -215,8 +207,8 @@ async insertionSort(arr:number[]){
     items[leftIndex] = items[rightIndex];
     items[rightIndex] = temp;
 
-    this.shade(leftIndex,"black"); //undoing the swap coloration
-    this.shade(rightIndex,"black");
+    this.shade(leftIndex,"white"); //undoing the swap coloration
+    this.shade(rightIndex,"white");
     await this.sleep(25);
   }
   
@@ -232,7 +224,7 @@ async insertionSort(arr:number[]){
             //this.shade(i,"blue");
             //await this.sleep(25); //iterate through
 
-            //this.shade(i,"black");
+            //this.shade(i,"white");
             //await this.sleep(10); //iterate through
             i++;
         }
@@ -240,7 +232,7 @@ async insertionSort(arr:number[]){
           //this.shade(j,"blue");
           //await this.sleep(25); //iterate through
 
-          //this.shade(j,"black");
+          //this.shade(j,"white");
           //await this.sleep(10); //iterate through
             j--;
         }
@@ -251,7 +243,7 @@ async insertionSort(arr:number[]){
             j--;
         }
     }
-    this.shade(pivot,"black"); //unshade pivot
+    this.shade(pivot,"white"); //unshade pivot
     await this.sleep(10);
 
     console.log(i);
@@ -298,8 +290,8 @@ async insertionSort(arr:number[]){
       await this.mergeSort(arr, temp, center + 1, right); //division of right side
       await this.merge(arr, temp, left, center + 1, right); //merging of the newly formed pairs
       //unshade center
-      this.shade(center,"black");
-      await this.sleep(50);
+      this.shade(center,"white");
+      await this.sleep(10);
     }
 
   }
@@ -321,15 +313,15 @@ async insertionSort(arr:number[]){
     while (left <= leftEnd && right <= rightEnd) {
       if (arr[left] <= arr[right]) {
         this.shade(k,"red"); //testing
-        await this.sleep(50);
+        await this.sleep(20);
         temp[k++] = arr[left++];
       } else {
         this.shade(k,"red"); //testing
-        await this.sleep(50);
+        await this.sleep(20);
         temp[k++] = arr[right++]
       }
-      this.shade(k-1,"black"); //testing
-      await this.sleep(10);
+      this.shade(k-1,"white"); //testing
+      await this.sleep(5);
     }
 
     while (left <= leftEnd) {
@@ -343,7 +335,7 @@ async insertionSort(arr:number[]){
     //re-add values from temp in ascending order
     for (let i: number = 0; i < temp.length; i++) {
       arr[i] = temp[i];
-      await this.sleep(50);
+      await this.sleep(30);
     }
 
     /*alternate implementation of the above in descending order:
@@ -398,7 +390,7 @@ async insertionSort(arr:number[]){
   }
 
   async shellSort(arr: number[]) {
-      let increment = arr.length / 2; 
+      let increment = arr.length / 2;  //increment between swaps
       while (increment > 0) {
           for (let i = increment; i < arr.length; i++) {
               var j = i;
@@ -411,8 +403,8 @@ async insertionSort(arr:number[]){
 
                   arr[j] = arr[j-increment];
 
-                  this.shade(j,"black"); //unshade post-swap
-                  this.shade(j-increment,"black");
+                  this.shade(j,"white"); //unshade post-swap
+                  this.shade(j-increment,"white");
                   await this.sleep(10);
                   j = j - increment;
 
@@ -422,13 +414,77 @@ async insertionSort(arr:number[]){
           }
       
           if (increment == 2) {
-              increment = 1;
+              increment = 1; //knock from 2 to 1
           } else {
-              increment = Math.floor(increment*5 / 11);
+              increment = Math.floor(increment*5 / 11); //shrink increment
           }
       }
-    return arr;
   }
   
+  async radixSortLSD(arr: number[]) {
+    let idx1, idx2, idx3, len1, len2, radix, radixKey;
+    let radices = {}, buckets = {}, curr;
+    let currLen, currBucket;
 
+    len1 = arr.length;
+    len2 = 10;  // radix sort uses ten buckets
+
+    // find the relevant radices to process for efficiency        
+    for (idx1 = 0;idx1 < len1;idx1++) {
+      radices[arr[idx1].toString().length] = 0;
+    }
+
+    // loop for each radix. For each radix we put all the items
+    // in buckets, and then pull them out of the buckets.
+    for (radix in radices) {          
+      // put each array item in a bucket based on its radix value
+      len1 = arr.length;
+      for (idx1 = 0;idx1 < len1;idx1++) {
+        curr = arr[idx1];
+        // item length is used to find its current radix value
+        currLen = curr.toString().length;
+        // only put the item in a radix bucket if the item
+        // key is as long as the radix
+        if (currLen >= radix) {
+          // radix starts from beginning of key, so need to
+          // adjust to get redix values from start of stringified key
+          radixKey = curr.toString()[currLen - radix];
+          // create the bucket if it does not already exist
+          if (!buckets.hasOwnProperty(radixKey)) {
+            buckets[radixKey] = [];
+          }
+          // put the array value in the bucket
+          buckets[radixKey].push(curr);          
+        } else {
+          if (!buckets.hasOwnProperty('0')) {
+            buckets['0'] = [];
+          }
+          buckets['0'].push(curr);          
+        }
+      }
+      // for current radix, items are in buckets, now put them
+      // back in the array based on their buckets
+      // this index moves us through the array as we insert items
+      idx1 = 0;
+      // go through all the buckets
+      for (idx2 = 0;idx2 < len2;idx2++) {
+        // only process buckets with items
+        if (buckets[idx2] != null) {
+          currBucket = buckets[idx2];
+          // insert all bucket items into array
+          len1 = currBucket.length;
+          for (idx3 = 0;idx3 < len1;idx3++) {
+            this.shade(idx1,"red"); //shade element
+            await this.sleep(50);
+
+            arr[idx1++] = currBucket[idx3]; //idx increments after this command executes
+
+            this.shade(idx1 - 1,"white"); //unshade element after idx1 increases
+            await this.sleep(20);
+          }
+        }
+      }
+      buckets = {};
+    }
+  }
 }

@@ -1,13 +1,18 @@
-<button (click) = "randomizeArray()">Randomize Array</button>
-<button (click) = "bubbleSort(this.pageArray)">Bubble Sort</button>
-<button (click) = "insertionSort(this.pageArray)">Insertion Sort</button>
-<button (click) = "quickSort(this.pageArray,0,pageArray.length-1)">Quick Sort</button>
-<button>Merge Sort</button>
-<button>Heap Sort</button>
+<div class = "bg">
+    <button (click) = "randomizeArray()">Randomize Array</button>
+    <button (click) = "bubbleSort(this.pageArray)">Bubble Sort</button>
+    <button (click) = "selectionSort(this.pageArray)">Selection Sort</button>
+    <button (click) = "insertionSort(this.pageArray)">Insertion Sort</button>
+    <button (click) = "quickSort(this.pageArray,0,pageArray.length-1)">Quick Sort</button>
+    <button (click) = "mergeSort(this.pageArray,this.temp,0,this.pageArray.length-1)">Merge Sort</button>
+    <button (click) = "heapSort(this.pageArray)">Heap Sort</button>
+    <button (click) = "shellSort(this.pageArray)">Shell Sort</button>
+    <button (click) = "radixSortLSD(this.pageArray)">Radix Sort LSD</button>
 
-<!--the challenge here is updating the DOM / colors in just the right places.-->
+    <!--the challenge here is updating the DOM / colors in just the right places.-->
 
-<div class = "row d-flex justify-content-center simulationContainer">
-    <div class = "column visualCol" id = "sortCol{{i}}" *ngFor = "let p of pageArray; let i = index" 
-    [ngStyle] = "{'height': ((p+1)*2)+'px','background-color': colorArray[i]}"></div>
+    <div class = "row d-flex justify-content-center simulationContainer">
+        <div class = "column visualCol" id = "sortCol{{i}}" *ngFor = "let p of pageArray; let i = index" 
+        [ngStyle] = "{'height': ((p+1)*2)+'px','background-color': colorArray[i]}"></div>
+    </div>
 </div>
