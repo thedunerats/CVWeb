@@ -1,4 +1,5 @@
 import { Component, OnInit, ɵConsole } from '@angular/core';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-sortingvisualizer',
@@ -77,6 +78,39 @@ export class SortingvisualizerComponent implements OnInit {
     //let index = id.toString();
     this.colorArray[id] = color;
     //console.log(index);//testing
+  }
+
+  //submission of Algorithm Form
+  chooseAlgo(form:NgForm){
+    switch(form.value["sortAlgo"]){
+      case "bubbleSort":
+        this.bubbleSort(this.pageArray);
+        break;
+      case "selectionSort":
+        this.selectionSort(this.pageArray);
+        break;
+      case "insertionSort":
+        this.insertionSort(this.pageArray);
+        break;
+      case "shellSort":
+        this.shellSort(this.pageArray);
+        break;
+      case "quickSort":
+        this.quickSort(this.pageArray,0,this.pageArray.length-1);
+        break;
+      case "mergeSort":
+        this.mergeSort(this.pageArray,this.temp,0,this.pageArray.length-1);
+        break;
+      case "heapSort":
+        this.heapSort(this.pageArray);
+        break;
+      case "radixSortLSD":
+        this.radixSortLSD(this.pageArray);
+        break;
+      default:
+        alert("Not in form yet");
+        break;
+    }
   }
 
   //SORTING FUNCTIONS
@@ -321,7 +355,7 @@ async insertionSort(arr:number[]){
         temp[k++] = arr[right++]
       }
       this.shade(k-1,"white"); //testing
-      await this.sleep(5);
+      await this.sleep(2);
     }
 
     while (left <= leftEnd) {
@@ -335,7 +369,7 @@ async insertionSort(arr:number[]){
     //re-add values from temp in ascending order
     for (let i: number = 0; i < temp.length; i++) {
       arr[i] = temp[i];
-      await this.sleep(30);
+      await this.sleep(5);
     }
 
     /*alternate implementation of the above in descending order:
@@ -480,7 +514,7 @@ async insertionSort(arr:number[]){
             arr[idx1++] = currBucket[idx3]; //idx increments after this command executes
 
             this.shade(idx1 - 1,"white"); //unshade element after idx1 increases
-            await this.sleep(20);
+            await this.sleep(10);
           }
         }
       }

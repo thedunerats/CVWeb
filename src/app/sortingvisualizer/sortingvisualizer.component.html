@@ -1,13 +1,36 @@
 <div class = "bg">
+    <!--NAVBAR-->
+    <nav class="navbar navbar-expand-md navbar-light bg-danger">
+        <a class="navbar-brand" href="./">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/app-demopage">Demos <span class="sr-only">(current)</span></a>
+            </li>
+            </ul>
+        </div>
+    </nav>
+    <form #algoForm = "ngForm" (ngSubmit) = "chooseAlgo(algoForm)">
+        <select name = "sortAlgo" ngModel>
+            <option value = "bubbleSort">Bubble Sort</option>
+            <option value = "selectionSort">Selection Sort</option>
+            <option value = "insertionSort">Insertion Sort</option>
+            <option value = "shellSort">Shell Sort</option>
+            <option value = "quickSort">Quick Sort</option>
+            <option value = "mergeSort">Merge Sort</option>
+            <option value = "heapSort">Heap Sort</option>
+            <option value = "radixSortLSD">Radix Sort LSD</option>
+        </select>
+        <button type = "submit">Sort!</button>
+    </form>
+
     <button (click) = "randomizeArray()">Randomize Array</button>
-    <button (click) = "bubbleSort(this.pageArray)">Bubble Sort</button>
-    <button (click) = "selectionSort(this.pageArray)">Selection Sort</button>
-    <button (click) = "insertionSort(this.pageArray)">Insertion Sort</button>
-    <button (click) = "quickSort(this.pageArray,0,pageArray.length-1)">Quick Sort</button>
-    <button (click) = "mergeSort(this.pageArray,this.temp,0,this.pageArray.length-1)">Merge Sort</button>
-    <button (click) = "heapSort(this.pageArray)">Heap Sort</button>
-    <button (click) = "shellSort(this.pageArray)">Shell Sort</button>
-    <button (click) = "radixSortLSD(this.pageArray)">Radix Sort LSD</button>
+    <br>
+
 
     <!--the challenge here is updating the DOM / colors in just the right places.-->
 
