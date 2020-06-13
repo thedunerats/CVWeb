@@ -11,7 +11,14 @@ export class SortingvisualizerComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.fillArray();
+    this.loadSmallScreenFormat();
+    if (this.isSmallScreen){
+      this.fillArray(50);
+      this.inputLength = 50;
+    } else {
+      this.fillArray(100);
+      this.inputLength = 100;
+    }
   }
 
   //need a function to change the color of an element as the algorith works
@@ -30,15 +37,26 @@ export class SortingvisualizerComponent implements OnInit {
   //test array for comparison
   testArray: number[] = [];
 
+  //speed multiplier for sorting speed
+  sortingRate: number;
+
+  inputLength: number;
+
+  //smallScreen Boolean
+  isSmallScreen: boolean;
+
+  //status screen for column width rendering
+  columnWidthFlag: string;
+
   //functions we need:
   //sorting algorithms
   //functions to highlight the columns
   //randomizer
 
   //Util functions
-  fillArray(){
-    for(let i = 0; i < 99; i++){ //array of size 40
-      this.pageArray.push(Math.round(Math.random() * 100)); //add a random number between 0 and 39
+  fillArray(inputLength: number){
+    for(let i = 0; i < inputLength; i++){ //array of size 40
+      this.pageArray.push(Math.round(Math.random() * (inputLength + 1))); //add a random number between 0 and 39
       this.colorArray.push("white"); //ensures same size as pageArray
     }
     for(let w = 0; w < this.pageArray.length; w++){
@@ -47,17 +65,20 @@ export class SortingvisualizerComponent implements OnInit {
     this.testArray.sort(function(a, b){return a - b}); //create a comparison for testing
     //NOTE: the above callback is necessary to compensate for ASCII sorting.
 
+    this.setColumnWidth(this.pageArray.length);
+
     console.log(this.pageArray);
     console.log(this.colorArray);
+    console.log(this.columnWidthFlag);
   }
 
-  randomizeArray(){// BE CAREFUL: you may need to reset color array here every time.
+  randomizeArray(inputLength: number){// BE CAREFUL: you may need to reset color array here every time.
     //generates a new array
     this.pageArray = [];
     this.colorArray = [];
     this.testArray = [];
     this.temp = []; //resetting merge sort
-    this.fillArray();
+    this.fillArray(inputLength);
     /* randomizes an already existing array
     for(let i = array.length - 1; i > 0; i--){
       const j = Math.floor(Math.random() * i);
@@ -67,6 +88,42 @@ export class SortingvisualizerComponent implements OnInit {
       
     }*/
   }
+
+  //change the length of the array that displays on the screen
+  changeInputLength(form:NgForm){
+    if(form.value["newSize"] < 20 || form.value["newSize"] > 400){ //check for too large or too small input
+      alert("That's not good input. try between 20 and 400.")
+    } else {
+      if (this.isSmallScreen){
+        if (form.value["newSize"] >= 20 && form.value["newSize"] <= 50) { //checking for a small screen
+          this.inputLength = form.value["newSize"];
+          this.randomizeArray(this.inputLength);
+        } else {
+          alert("Try a value between 20 and 50.");
+        }
+      } else {
+          this.inputLength = form.value["newSize"];
+          this.randomizeArray(this.inputLength);
+        }
+    }
+  }
+
+  //depending on array size, render ngTemplates with this flag
+  setColumnWidth(arrLength: number){
+    if(arrLength <= 50){
+      this.columnWidthFlag = "SMALL";
+    }
+    if(arrLength > 50 && arrLength <= 150){
+      this.columnWidthFlag = "MEDIUM";
+    }
+    if(arrLength > 150 && arrLength <= 250){
+      this.columnWidthFlag = "LARGE";
+    }
+    if(arrLength > 250){
+      this.columnWidthFlag = "XLARGE";
+    }
+  }
+
 
   sleep(milliseconds) { //custom synchronous delay method
     return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -78,6 +135,23 @@ export class SortingvisualizerComponent implements OnInit {
     //let index = id.toString();
     this.colorArray[id] = color;
     //console.log(index);//testing
+  }
+
+  getWidthAndHeight(): number{ //print width and height of screen
+    const width  = window.innerWidth || document.documentElement.clientWidth || 
+    document.body.clientWidth;
+    const height = window.innerHeight|| document.documentElement.clientHeight|| 
+    document.body.clientHeight;
+    return width; //checking for screen width as determining factor
+  }
+
+  loadSmallScreenFormat(){ //check for a small screen
+    if (this.getWidthAndHeight() < 700) {
+      this.isSmallScreen = true;
+    } else {
+      this.isSmallScreen = false;
+    }
+    console.log("SMALL SCREEN:" + this.isSmallScreen);
   }
 
   //submission of Algorithm Form
@@ -112,6 +186,10 @@ export class SortingvisualizerComponent implements OnInit {
         break;
     }
   }
+
+  //adjust the sorting rate
+  //NOTE: you didn't need to write a function for it. ngModel did it for you.
+
 
   //SORTING FUNCTIONS
   //bubblesort
@@ -171,7 +249,7 @@ export class SortingvisualizerComponent implements OnInit {
     let len = arr.length;
     for (let i = 0; i < len; i++) {
         let min = i;
-       
+             
 
         for (let j = i + 1; j < len; j++) {
             if (arr[min] > arr[j]) {
@@ -187,7 +265,7 @@ export class SortingvisualizerComponent implements OnInit {
             arr[min] = tmp;
             await this.sleep(50);
 
-            this.shade(i,"white");
+            this.shade(i,"white"); //unshade swap
             this.shade(min,"white");
             await this.sleep(10);
         }
@@ -235,7 +313,7 @@ async insertionSort(arr:number[]){
   async swap(items: number[], leftIndex: number, rightIndex: number){
     this.shade(leftIndex,"red"); //highlighting the swap
     this.shade(rightIndex,"red");
-    await this.sleep(50);
+    await this.sleep(30);
     
     var temp = items[leftIndex]; //perform the actual swap
     items[leftIndex] = items[rightIndex];
@@ -243,7 +321,7 @@ async insertionSort(arr:number[]){
 
     this.shade(leftIndex,"white"); //undoing the swap coloration
     this.shade(rightIndex,"white");
-    await this.sleep(25);
+    await this.sleep(5);
   }
   
   async partition(items: number[], left: number, right: number) {
@@ -290,7 +368,7 @@ async insertionSort(arr:number[]){
     if (items.length > 1) {
         index = await this.partition(items, left, right); //index returned from partition (as a promise)
         if (left < index - 1) { //more elements on the left side of the pivot
-      
+            
             await this.quickSort(items, left, index - 1);
         }
         if (index < right) { //more elements on the right side of the pivot
@@ -318,7 +396,7 @@ async insertionSort(arr:number[]){
       let center: number = Math.floor((left + right) / 2);
       //shade center
       this.shade(center,"yellow");
-      await this.sleep(50);
+      await this.sleep(15);
 
       await this.mergeSort(arr, temp, left, center); //division of left side
       await this.mergeSort(arr, temp, center + 1, right); //division of right side
@@ -347,11 +425,11 @@ async insertionSort(arr:number[]){
     while (left <= leftEnd && right <= rightEnd) {
       if (arr[left] <= arr[right]) {
         this.shade(k,"red"); //testing
-        await this.sleep(20);
+        await this.sleep(10);
         temp[k++] = arr[left++];
       } else {
         this.shade(k,"red"); //testing
-        await this.sleep(20);
+        await this.sleep(10);
         temp[k++] = arr[right++]
       }
       this.shade(k-1,"white"); //testing
@@ -509,7 +587,7 @@ async insertionSort(arr:number[]){
           len1 = currBucket.length;
           for (idx3 = 0;idx3 < len1;idx3++) {
             this.shade(idx1,"red"); //shade element
-            await this.sleep(50);
+            await this.sleep(30);
 
             arr[idx1++] = currBucket[idx3]; //idx increments after this command executes
 

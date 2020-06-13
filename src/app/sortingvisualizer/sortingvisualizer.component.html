@@ -2,11 +2,8 @@
     <!--NAVBAR-->
     <nav class="navbar navbar-expand-md navbar-light bg-danger">
         <a class="navbar-brand" href="./">Home</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="container-fluid" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
                 <a class="nav-link" href="/app-demopage">Demos <span class="sr-only">(current)</span></a>
@@ -14,28 +11,63 @@
             </ul>
         </div>
     </nav>
-    <form #algoForm = "ngForm" (ngSubmit) = "chooseAlgo(algoForm)">
-        <select name = "sortAlgo" ngModel>
-            <option value = "bubbleSort">Bubble Sort</option>
-            <option value = "selectionSort">Selection Sort</option>
-            <option value = "insertionSort">Insertion Sort</option>
-            <option value = "shellSort">Shell Sort</option>
-            <option value = "quickSort">Quick Sort</option>
-            <option value = "mergeSort">Merge Sort</option>
-            <option value = "heapSort">Heap Sort</option>
-            <option value = "radixSortLSD">Radix Sort LSD</option>
-        </select>
-        <button type = "submit">Sort!</button>
-    </form>
+    
 
-    <button (click) = "randomizeArray()">Randomize Array</button>
+    <button (click) = "randomizeArray(this.inputLength)">Randomize Array</button>
     <br>
 
 
-    <!--the challenge here is updating the DOM / colors in just the right places.-->
-
-    <div class = "row d-flex justify-content-center simulationContainer">
-        <div class = "column visualCol" id = "sortCol{{i}}" *ngFor = "let p of pageArray; let i = index" 
-        [ngStyle] = "{'height': ((p+1)*2)+'px','background-color': colorArray[i]}"></div>
+    <!--SORTED ARRAY VISUALIZED-->
+    <ng-container [ngSwitch] = "this.columnWidthFlag">
+        <div *ngSwitchCase = "'SMALL'" class = "row d-flex justify-content-center simulationContainer">
+            <div class = "column visualCol" id = "sortCol{{i}}" *ngFor = "let p of pageArray; let i = index" 
+            [ngStyle] = "{'height': ((p+1)*2)+'px','background-color': colorArray[i],'width': '4px'}"></div>
+        </div>
+        <div *ngSwitchCase = "'MEDIUM'" class = "row d-flex justify-content-center simulationContainer">
+            <div class = "column visualCol" id = "sortCol{{i}}" *ngFor = "let p of pageArray; let i = index" 
+            [ngStyle] = "{'height': ((p+1)*2)+'px','background-color': colorArray[i],'width': '3px'}"></div>
+        </div>
+        <div *ngSwitchCase = "'LARGE'" class = "row d-flex justify-content-center simulationContainer">
+            <div class = "column visualCol" id = "sortCol{{i}}" *ngFor = "let p of pageArray; let i = index" 
+            [ngStyle] = "{'height': p+'px','background-color': colorArray[i],'width': '2px'}"></div>
+        </div>
+        <div *ngSwitchCase = "'XLARGE'" class = "row d-flex justify-content-center simulationContainer">
+            <div class = "column visualCol" id = "sortCol{{i}}" *ngFor = "let p of pageArray; let i = index" 
+            [ngStyle] = "{'height': p+'px','background-color': colorArray[i],'width': '1px'}"></div>
+        </div>
+    </ng-container>
+    <br> <!--CONTROLS-->
+    <div class = "controls row d-flex justify-content-center">
+        <div class = "col-xs-1">
+            <p class = "helpText">Choose a Sorting Algorithm:</p>
+        </div>
+        <div class = "col-xs-1">
+            <form #algoForm = "ngForm" (ngSubmit) = "chooseAlgo(algoForm)" class = "sortChoice col"> 
+                <select name = "sortAlgo" ngModel>
+                    <option value = "bubbleSort">Bubble Sort</option>
+                    <option value = "selectionSort">Selection Sort</option>
+                    <option value = "insertionSort">Insertion Sort</option>
+                    <option value = "shellSort">Shell Sort</option>
+                    <option value = "quickSort">Quick Sort</option>
+                    <option value = "mergeSort">Merge Sort</option>
+                    <option value = "heapSort">Heap Sort</option>
+                    <option value = "radixSortLSD">Radix Sort LSD</option>
+                </select>
+                <button type = "submit">Sort!</button>
+            </form>
+        </div>
+        <!--might put this back in later-->
+        <!--<div class = "col-xs-1">
+            <input type="range" step = "0.01" min="0.5" max="2" value="1" class="slider" id="sortRange" [(ngModel)] = "this.sortingRate">
+            <p>{{sortingRate}}</p>
+        </div>-->
+        <div class = "col-xs-1">
+            <form #sizeForm = "ngForm" (ngSubmit) = "changeInputLength(sizeForm)"> 
+                <input type="number" class="form-control" min = "20" max = "400" name = "newSize" placeholder="Array Size" ngModel>
+                <button type = "submit">Resize Array</button>
+            </form>
+        </div>
+            <!--speed adjuster and sizer go here-->
+            <!--have it update the dom / databind with the speed.-->
     </div>
 </div>
