@@ -1,0 +1,14 @@
+<p>pathfindingvisual works!</p>
+
+<table layout = "row" class = "d-flex container justify-content-center"> 
+    <tbody class = "flex-sm-shrink-1">
+        <tr *ngFor = "let r of gridArray; let i = index" class = "flex-sm-shrink-1">
+            <td *ngFor = "let c of r; let j = index" class = "flex-sm-shrink-1"
+            (mousedown) = "downClickFunction(j,i,colorArray[i][j])"
+            (mouseenter) = "mouseEnterFunction(j,i,colorArray[i][j])"
+            (mouseup) = "mouseUpFunction()"
+            [ngStyle] = "{'background-color': colorArray[i][j]}">
+            </td>
+        </tr>
+    </tbody>
+</table>
