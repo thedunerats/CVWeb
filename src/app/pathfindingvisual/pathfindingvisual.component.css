@@ -1,6 +1,10 @@
 td{ /* represents a square in the grid */
-    border: 1px solid black;
+    border: 1px solid #b4ffff;
     border-collapse: collapse;
     width: 10px;
     height: 10px;
+}
+
+table{
+    transform: rotate(180deg) scaleX(-1); /*rotates and creates mirror image. testing for now */
 }
