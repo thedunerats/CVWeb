@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { isNullOrUndefined } from 'util';
+
 
 @Component({
   selector: 'app-pathfindingvisual',
@@ -40,7 +40,8 @@ export class PathfindingvisualComponent implements OnInit {
   draggingStartNode: boolean = false;
   draggingEndNode: boolean = false;
 
-
+  //animated cell array
+  visitedCellsToAnimate: number[][] = [];
 
   //UTIL Functions
   fillArray(){ //call to reset the array back to normal
@@ -115,6 +116,8 @@ export class PathfindingvisualComponent implements OnInit {
     this.endNode = [];
     this.setStartNode(24,24);
     this.setEndNode(24,74);
+    this.visitedCellsToAnimate = [];
+    this.finalPath = [];
   }
 
   //will probably need an animation util that shades and delays.
@@ -208,7 +211,7 @@ export class PathfindingvisualComponent implements OnInit {
   //is this node a wall?
   isThisAWall(currentNode: number[]): boolean {
     if(currentNode === null || currentNode === undefined){
-      return false;
+      return true; //was false earlier. not sure why.
     }
     if(this.colorArray[currentNode[0]][currentNode[1]] === "#0B041C") {
       return true;
@@ -273,25 +276,44 @@ export class PathfindingvisualComponent implements OnInit {
 
   //pathfinding functions
   depthFirstSearch(currentNode: number[]){ //depth first search (will try recursive approach)
+    console.log("current node at beginning of iteration:");
+    console.log(currentNode);
+    console.log(this.endNode);
     if (currentNode === this.endNode){ //base case when final path is found
+      console.log("made it!");
       console.log(this.finalPath);
+      this.animateCells(this.visitedCellsToAnimate,"orange");
+      this.finalPath = [];
+      this.visitedCellsToAnimate = [];
       return;
     }
     let neighbors = this.getNeighbors(currentNode);
+    console.log("Neighbors:");
+    console.log(neighbors);
     if(neighbors.length > 0){
       //traverse to next node, then start again (need a function to pick unvisited neighbor)
       // will probably go left, up, right down
       // and then have it pull the first entry from the list of neighbors
-      if(currentNode !== this.startNode || currentNode !== this.endNode){
-        this.animateCells([currentNode],"orange"); //don't animate start or end nodes
-      }
+      if(currentNode !== this.startNode && currentNode !== this.endNode){
+        this.visitedCellsToAnimate.push(currentNode); //don't animate start or end nodes
+      } //add current node to visited animation
       this.visitedArray[currentNode[0]][currentNode[1]] = true;
+      console.log("current node before pushing:");
+      console.log(currentNode);
       this.finalPath.push(currentNode); //add current node to final path stack
+      console.log(this.finalPath);
+      console.log(neighbors[0]);
       this.depthFirstSearch(neighbors[0]); //traverse to next node in neighbors
     } else{
+      console.log("Current Path:");
+      console.log(this.finalPath);
       this.finalPath.pop();
+      console.log("Shortened Path:");
+      console.log(this.finalPath);
+      console.log(this.finalPath.length);
+      console.log(this.finalPath[this.finalPath.length - 1]);
       //pop from final path and start again
-      this.depthFirstSearch(this.finalPath[this.finalPath.length]); //go back to last entry in stack
+      this.depthFirstSearch(this.finalPath[this.finalPath.length - 1]); //go back to last entry in stack
     }
     // check if end node get neighbors, pop from stack, go back and repeat if no neighbors, add neighbors to visited, traverse
   }
