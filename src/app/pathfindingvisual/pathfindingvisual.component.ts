@@ -279,7 +279,8 @@ export class PathfindingvisualComponent implements OnInit {
     console.log("current node at beginning of iteration:");
     console.log(currentNode);
     console.log(this.endNode);
-    if (currentNode === this.endNode){ //base case when final path is found
+    console.log(currentNode[0] === this.endNode[0] && currentNode[1] === this.endNode[1]);
+    if (currentNode[0] === this.endNode[0] && currentNode[1] === this.endNode[1]){ //base case when final path is found
       console.log("made it!");
       console.log(this.finalPath);
       this.animateCells(this.visitedCellsToAnimate,"orange");
