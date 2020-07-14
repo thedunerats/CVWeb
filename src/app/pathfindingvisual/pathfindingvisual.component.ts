@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
 
 
 @Component({
@@ -12,10 +13,10 @@ export class PathfindingvisualComponent implements OnInit {
 
   ngOnInit(): void {
     this.fillArray();
-    this.colorArray[24][24] = "green"; //set start node
-    this.colorArray[24][74] = "red";  //set end node
-    this.setStartNode(24,24);
-    this.setEndNode(24,74); //the mouseenter and shade functions have
+    this.colorArray[12][12] = "green"; //set start node
+    this.colorArray[12][36] = "red";  //set end node
+    this.setStartNode(12,12);
+    this.setEndNode(12,36); //the mouseenter and shade functions have
     //the coordinate system backwards and were converted into a cartesian system.
     //I have come to regret this move. NEVER DO THIS! VERY BAD!
   }
@@ -45,8 +46,8 @@ export class PathfindingvisualComponent implements OnInit {
 
   //UTIL Functions
   fillArray(){ //call to reset the array back to normal
-    for (let i = 0; i < 50; i++){
-      for(let j = 0; j < 100; j++){
+    for (let i = 0; i < 25; i++){
+      for(let j = 0; j < 50; j++){
         this.visitedRow.push(false); //makes a whole array
         this.colorRow.push("white");
       }
@@ -87,8 +88,13 @@ export class PathfindingvisualComponent implements OnInit {
   async animateCells(cellsToAnimate: number[][], color: string){ //animate cells passed in
     for(let i in cellsToAnimate){
       this.shade(cellsToAnimate[i][0],cellsToAnimate[i][1],color);
-      await this.sleep(50);
+      await this.sleep(10);
     }
+  }
+
+  async animateVisitedAndPath(){
+    await this.animateCells(this.visitedCellsToAnimate,"orange");
+    await this.animateCells(this.finalPath.reverse(),"yellow"); //trace final path back from end
   }
 
   //clear board
@@ -96,8 +102,8 @@ export class PathfindingvisualComponent implements OnInit {
     //this.visitedArray = []; //clear grid and color arrays first
     //this.colorArray = [];
     //this.fillArray(); //a touch slow, but not a priority to make this faster.
-    for (let i = 0; i < 50; i++){
-      for(let j = 0; j < 100; j++){
+    for (let i = 0; i < 25; i++){
+      for(let j = 0; j < 50; j++){
         if(this.isThisAWall([i,j]) || this.colorArray[i][j] !== "white"){ //will need to update to include visited nodes
           this.colorArray[i][j] = "white";
         }
@@ -110,12 +116,12 @@ export class PathfindingvisualComponent implements OnInit {
     }
     //this.colorArray[this.startNode[0]][this.startNode[1]] = "white"; //uncolor old start and end nodes
     //this.colorArray[this.endNode[0]][this.endNode[1]] = "white";
-    this.colorArray[24][24] = "green"; //set start node
-    this.colorArray[24][74] = "red";  //set end node
+    this.colorArray[12][12] = "green"; //set start node
+    this.colorArray[12][36] = "red";  //set end node
     this.startNode = [];
     this.endNode = [];
-    this.setStartNode(24,24);
-    this.setEndNode(24,74);
+    this.setStartNode(12,12);
+    this.setEndNode(12,36);
     this.visitedCellsToAnimate = [];
     this.finalPath = [];
   }
@@ -220,6 +226,22 @@ export class PathfindingvisualComponent implements OnInit {
     }
   }
 
+  isStartNode(currentNode: number[]): boolean{
+    if(currentNode[0] === this.startNode[0] && currentNode[1] === this.startNode[1]){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  isEndNode(currentNode: number[]): boolean{
+    if(currentNode[0] === this.endNode[0] && currentNode[1] === this.endNode[1]){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /*swapArrayValues(nodeSet: number[][]): number[][]{ //do this before putting into values to animate
   for(let n = 0; n < nodeSet.length; n++){
     var temp = nodeSet[n][0];
@@ -238,17 +260,17 @@ export class PathfindingvisualComponent implements OnInit {
     let downNode;
 
     //might refactor this to be the length of the table dimensions.
-    if(currentNode[1] > 0){ //done to avoid out of bounds error
-      leftNode = [currentNode[0], currentNode[1] - 1];
-    }
-    if(currentNode[0] < this.visitedArray.length - 1){ //done to avoid out of bounds error
-      upNode = [currentNode[0] + 1, currentNode[1]];
-    }
     if(currentNode[1] < this.visitedArray[0].length - 1){ //done to avoid out of bounds error
       rightNode = [currentNode[0], currentNode[1] + 1];
     }
     if(currentNode[0] > 0){
       downNode = [currentNode[0] - 1, currentNode[1]];
+    }
+    if(currentNode[1] > 0){ //done to avoid out of bounds error
+      leftNode = [currentNode[0], currentNode[1] - 1];
+    }
+    if(currentNode[0] < this.visitedArray.length - 1){ //done to avoid out of bounds error
+      upNode = [currentNode[0] + 1, currentNode[1]];
     }
 
     let neighbors: number[][] = [];
@@ -275,44 +297,43 @@ export class PathfindingvisualComponent implements OnInit {
   }
 
   //pathfinding functions
-  depthFirstSearch(currentNode: number[]){ //depth first search (will try recursive approach)
-    console.log("current node at beginning of iteration:");
+  //need to make async to ensure proper animation
+  async depthFirstSearch(currentNode: number[]){ //depth first search (will try recursive approach)
+    console.log("Current NODE:");
     console.log(currentNode);
-    console.log(this.endNode);
-    console.log(currentNode[0] === this.endNode[0] && currentNode[1] === this.endNode[1]);
-    if (currentNode[0] === this.endNode[0] && currentNode[1] === this.endNode[1]){ //base case when final path is found
+    if (this.isEndNode(currentNode)){ //base case when final path is found
       console.log("made it!");
+      this.finalPath.splice(0,1); //remove start node from animation
       console.log(this.finalPath);
-      this.animateCells(this.visitedCellsToAnimate,"orange");
+      //this.animateCells(this.visitedCellsToAnimate,"orange");
+      //let trimmedFinalPath = [new Set(this.finalPath)];
+      //console.log(trimmedFinalPath); let's see how this plays out.
+      //this.animateCells(this.finalPath,"yellow");
+      await this.animateVisitedAndPath();
       this.finalPath = [];
       this.visitedCellsToAnimate = [];
+      console.log(this.finalPath);
+      console.log(this.visitedCellsToAnimate);
       return;
     }
+    if(!this.isThisNodeVisited(currentNode)){ //check if visited
+      this.visitedArray[currentNode[0]][currentNode[1]] = true; //mark if true
+      if(!this.isStartNode(currentNode)){
+        this.visitedCellsToAnimate.push(currentNode); //don't animate start node
+      }
+      this.finalPath.push(currentNode); //add current node to final path stack
+        //add current node to visited animation
+    }
+
     let neighbors = this.getNeighbors(currentNode);
-    console.log("Neighbors:");
-    console.log(neighbors);
     if(neighbors.length > 0){
       //traverse to next node, then start again (need a function to pick unvisited neighbor)
       // will probably go left, up, right down
       // and then have it pull the first entry from the list of neighbors
-      if(currentNode !== this.startNode && currentNode !== this.endNode){
-        this.visitedCellsToAnimate.push(currentNode); //don't animate start or end nodes
-      } //add current node to visited animation
-      this.visitedArray[currentNode[0]][currentNode[1]] = true;
-      console.log("current node before pushing:");
-      console.log(currentNode);
-      this.finalPath.push(currentNode); //add current node to final path stack
-      console.log(this.finalPath);
-      console.log(neighbors[0]);
       this.depthFirstSearch(neighbors[0]); //traverse to next node in neighbors
-    } else{
-      console.log("Current Path:");
-      console.log(this.finalPath);
+    } else { 
+      console.log(currentNode);
       this.finalPath.pop();
-      console.log("Shortened Path:");
-      console.log(this.finalPath);
-      console.log(this.finalPath.length);
-      console.log(this.finalPath[this.finalPath.length - 1]);
       //pop from final path and start again
       this.depthFirstSearch(this.finalPath[this.finalPath.length - 1]); //go back to last entry in stack
     }

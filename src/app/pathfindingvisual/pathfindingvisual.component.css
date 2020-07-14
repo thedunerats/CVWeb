@@ -1,8 +1,8 @@
 td{ /* represents a square in the grid */
     border: 1px solid #b4ffff;
     border-collapse: collapse;
-    width: 10px;
-    height: 10px;
+    width: 20px;
+    height: 20px;
 }
 
 table{
