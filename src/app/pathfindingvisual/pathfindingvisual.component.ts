@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { BooleanInput } from '@angular/cdk/coercion';
 
 
 @Component({
@@ -32,6 +31,9 @@ export class PathfindingvisualComponent implements OnInit {
   startNode: number[] = []; 
   endNode: number[] = [];
   tempVal: number[] = [];
+
+  //BFS queue
+  nodesToVisit: number[][] = [];
 
   //finalPath stack
   finalPath: number[][] = [];
@@ -86,7 +88,7 @@ export class PathfindingvisualComponent implements OnInit {
 
   //animate sets of nodes passed in
   async animateCells(cellsToAnimate: number[][], color: string){ //animate cells passed in
-    for(let i in cellsToAnimate){
+    for(let i = 0; i < cellsToAnimate.length; i++){
       this.shade(cellsToAnimate[i][0],cellsToAnimate[i][1],color);
       await this.sleep(10);
     }
@@ -276,22 +278,22 @@ export class PathfindingvisualComponent implements OnInit {
     let neighbors: number[][] = [];
     if(!this.isThisAWall(leftNode) && !this.isThisNodeVisited(leftNode)){ //no wall and not visited.
       neighbors.push(leftNode);
-      console.log("Left Node:" + leftNode);
+      //console.log("Left Node:" + leftNode);
     }
     if(!this.isThisAWall(upNode) && !this.isThisNodeVisited(upNode)){
       neighbors.push(upNode);
-      console.log("Up Node:" + upNode);
+      //console.log("Up Node:" + upNode);
     }
     if(!this.isThisAWall(rightNode) && !this.isThisNodeVisited(rightNode)){
       neighbors.push(rightNode);
-      console.log("Right Node:" + rightNode);
+      //console.log("Right Node:" + rightNode);
     }
     if(!this.isThisAWall(downNode) && !this.isThisNodeVisited(downNode)){
       neighbors.push(downNode);
-      console.log("Down Node:" + downNode);
+      //console.log("Down Node:" + downNode);
     }
-    console.log(neighbors); //testing
-    console.log(neighbors.length);
+    //console.log(neighbors); //testing
+    //console.log(neighbors.length);
     //console.log(this.swapArrayValues(neighbors));
     return neighbors;
   }
@@ -305,12 +307,8 @@ export class PathfindingvisualComponent implements OnInit {
       console.log("made it!");
       this.finalPath.splice(0,1); //remove start node from animation
       console.log(this.finalPath);
-      //this.animateCells(this.visitedCellsToAnimate,"orange");
-      //let trimmedFinalPath = [new Set(this.finalPath)];
-      //console.log(trimmedFinalPath); let's see how this plays out.
-      //this.animateCells(this.finalPath,"yellow");
       await this.animateVisitedAndPath();
-      this.finalPath = [];
+      this.finalPath = []; //clear for another iteration
       this.visitedCellsToAnimate = [];
       console.log(this.finalPath);
       console.log(this.visitedCellsToAnimate);
@@ -338,5 +336,50 @@ export class PathfindingvisualComponent implements OnInit {
       this.depthFirstSearch(this.finalPath[this.finalPath.length - 1]); //go back to last entry in stack
     }
     // check if end node get neighbors, pop from stack, go back and repeat if no neighbors, add neighbors to visited, traverse
+  }
+
+  //might not do recursion for this, actually.
+  breadthFirstSearch(currentNode: number[]){
+    //initialized the queue in the web page
+
+    //enqueue the start node
+    this.nodesToVisit.push(currentNode);
+    
+    while(!this.isEndNode(currentNode)){
+      //console.log(currentNode);
+      if(!this.isThisNodeVisited(currentNode)){ //check if visited
+        this.visitedArray[currentNode[0]][currentNode[1]] = true; //mark as visited if true
+        if(!this.isStartNode(currentNode)){
+          //this.visitedCellsToAnimate.push(currentNode); //don't animate start node
+          //this.shade(currentNode[0],currentNode[1],"orange");
+          //await this.sleep(10);
+        }
+          //add current node to visited animation
+      }
+      //add all unvisited neighbor nodes to a queue
+      let neighbors = this.getNeighbors(currentNode);
+      for(let i = 0; i < neighbors.length; i++){
+        if(!this.nodesToVisit.includes(neighbors[i])){ //dont push duplicates
+          this.nodesToVisit.push(neighbors[i]); //enqueue all unvisited neighbors
+        }
+      }
+      //dequeue the current node
+      this.nodesToVisit.splice(0,1);
+      //will repeat with to the next node in the queue, repeat
+      //reassign current node at the end of the loop to be the node at the highest priority in the queue
+      currentNode = this.nodesToVisit[0];
+      //will need to establish base case and traceback functions?
+    }
+    console.log("Made it to the end!");
+    this.nodesToVisit = [];
+    //await this.animateCells(this.visitedCellsToAnimate,"orange");
+    if(this.isEndNode(currentNode)){ //base case, do when end node is found
+      //traceback path to start node
+    }
+    this.visitedCellsToAnimate = []; //clear animation for the next run
+    //will probably write a while loop: while current node != end node, traverse
+    //to the node at the highest priority position at the end of the loop
+    //mark the current node as visited, add unvisited neighbors to the queue, traverse to the
+    //node at the top of the queue
   }
 }
