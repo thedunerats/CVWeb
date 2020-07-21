@@ -21,19 +21,25 @@ export class PathfindingvisualComponent implements OnInit {
   }
 
   //initialize variables
+  //length and width
+  gridLength: number = 50;
+  gridWidth: number = 25;
+
+  //grid properties
   visitedArray: boolean[][] = []; //either visited or not visited
   visitedRow: boolean[] = []; //dummy array that serves as an auxiliary for the loading
 
   colorArray: string[][] = []; //color array for display purposes
   colorRow: string[] = [];
 
+  //previous node array
+  prevArray: number[][][] = [];
+  prevRow: number[] = [];
+
   //special nodes (ordered pairs)
   startNode: number[] = []; 
   endNode: number[] = [];
   tempVal: number[] = [];
-
-  //BFS queue
-  nodesToVisit: number[][] = [];
 
   //finalPath stack
   finalPath: number[][] = [];
@@ -48,19 +54,24 @@ export class PathfindingvisualComponent implements OnInit {
 
   //UTIL Functions
   fillArray(){ //call to reset the array back to normal
-    for (let i = 0; i < 25; i++){
-      for(let j = 0; j < 50; j++){
+    for (let i = 0; i < this.gridWidth; i++){
+      for(let j = 0; j < this.gridLength; j++){
         this.visitedRow.push(false); //makes a whole array
         this.colorRow.push("white");
+        this.prevRow.push(null); //for parent traceback function
       }
       this.visitedArray.push(this.visitedRow); //pushes and clears entire grid row before next iteration
       this.visitedRow = [];
 
       this.colorArray.push(this.colorRow); //pushes and clears color row
       this.colorRow = [];
+
+      this.prevArray.push([this.prevRow]);
+      this.prevRow = [];
     }
     console.log(this.visitedArray);
     console.log(this.colorArray);
+    console.log(this.prevArray);
   }
 
   //NEED: a function for setting start and end nodes.
@@ -90,7 +101,7 @@ export class PathfindingvisualComponent implements OnInit {
   async animateCells(cellsToAnimate: number[][], color: string){ //animate cells passed in
     for(let i = 0; i < cellsToAnimate.length; i++){
       this.shade(cellsToAnimate[i][0],cellsToAnimate[i][1],color);
-      await this.sleep(10);
+      await this.sleep(5);
     }
   }
 
@@ -104,8 +115,8 @@ export class PathfindingvisualComponent implements OnInit {
     //this.visitedArray = []; //clear grid and color arrays first
     //this.colorArray = [];
     //this.fillArray(); //a touch slow, but not a priority to make this faster.
-    for (let i = 0; i < 25; i++){
-      for(let j = 0; j < 50; j++){
+    for (let i = 0; i < this.gridWidth; i++){
+      for(let j = 0; j < this.gridLength; j++){
         if(this.isThisAWall([i,j]) || this.colorArray[i][j] !== "white"){ //will need to update to include visited nodes
           this.colorArray[i][j] = "white";
         }
@@ -114,6 +125,9 @@ export class PathfindingvisualComponent implements OnInit {
         }
         //this.visitedRow.push(false); //makes a whole array
         //this.colorRow.push("white");
+        if(!this.prevArray[i][j] === null){
+          this.prevArray[i][j] = null;
+        }
       }
     }
     //this.colorArray[this.startNode[0]][this.startNode[1]] = "white"; //uncolor old start and end nodes
@@ -339,44 +353,78 @@ export class PathfindingvisualComponent implements OnInit {
   }
 
   //might not do recursion for this, actually.
-  breadthFirstSearch(currentNode: number[]){
+  async breadthFirstSearch(currentNode: number[]){
     //initialized the queue in the web page
-
+    let nodesToVisit: number[][] = [];
     //enqueue the start node
-    this.nodesToVisit.push(currentNode);
+    nodesToVisit.push(currentNode);
     
+    this.visitedArray[currentNode[0]][currentNode[1]] = true; //mark as visited if true
+
     while(!this.isEndNode(currentNode)){
-      //console.log(currentNode);
-      if(!this.isThisNodeVisited(currentNode)){ //check if visited
+
+      //ANIMATION FUNCTION
+      if(!this.isStartNode(currentNode)){
+        this.visitedCellsToAnimate.push(currentNode); //don't animate start node
+        //this.shade(currentNode[0],currentNode[1],"orange");
+        //await this.sleep(5);
+      }
+      //dequeue the current node
+      nodesToVisit.splice(0,1);
+      //add all unvisited neighbor nodes to a queue
+      let neighbors = this.getNeighbors(currentNode);
+      console.log(neighbors);
+      //ITERATE through the neighbors, only pulls non-visited members
+      for(let i = 0; i < neighbors.length; i++){
+        //dont push duplicates
+        console.log(neighbors[i]);
+        console.log(neighbors[i][0]);
+        console.log(neighbors[i][1]);
+        nodesToVisit.push(neighbors[i]); //enqueue all unvisited neighbors
+        this.visitedArray[neighbors[i][0]][neighbors[i][1]] = true; //mark everything in queue as visited
+        this.prevArray[neighbors[i][0]][neighbors[i][1]] = currentNode; //set surrent node as parent of neighbors
+      }
+      currentNode = nodesToVisit[0]; //testing
+     /* if(!this.isThisNodeVisited(currentNode)){ //check if visited
         this.visitedArray[currentNode[0]][currentNode[1]] = true; //mark as visited if true
         if(!this.isStartNode(currentNode)){
           //this.visitedCellsToAnimate.push(currentNode); //don't animate start node
-          //this.shade(currentNode[0],currentNode[1],"orange");
-          //await this.sleep(10);
+          this.shade(currentNode[0],currentNode[1],"orange");
+          await this.sleep(5);
         }
           //add current node to visited animation
       }
+      //dequeue the current node
+      nodesToVisit.splice(0,1);
       //add all unvisited neighbor nodes to a queue
-      let neighbors = this.getNeighbors(currentNode);
+      //let neighbors = this.getNeighbors(currentNode);
       for(let i = 0; i < neighbors.length; i++){
-        if(!this.nodesToVisit.includes(neighbors[i])){ //dont push duplicates
-          this.nodesToVisit.push(neighbors[i]); //enqueue all unvisited neighbors
+        if(!nodesToVisit.includes(neighbors[i])){ //dont push duplicates
+          nodesToVisit.push(neighbors[i]); //enqueue all unvisited neighbors
         }
       }
-      //dequeue the current node
-      this.nodesToVisit.splice(0,1);
+
       //will repeat with to the next node in the queue, repeat
       //reassign current node at the end of the loop to be the node at the highest priority in the queue
-      currentNode = this.nodesToVisit[0];
-      //will need to establish base case and traceback functions?
-    }
+      currentNode = nodesToVisit[0];
+      //will need to establish base case and traceback functions?*/
+    } 
     console.log("Made it to the end!");
-    this.nodesToVisit = [];
-    //await this.animateCells(this.visitedCellsToAnimate,"orange");
-    if(this.isEndNode(currentNode)){ //base case, do when end node is found
-      //traceback path to start node
+    console.log(this.prevArray);
+    nodesToVisit = []; //empty the queue
+    await this.animateCells(this.visitedCellsToAnimate,"orange");
+    
+      while(!this.isStartNode(currentNode)){ //keep going until start is reached
+        if(!this.isEndNode(currentNode)){ //base case, do when end node is found
+          //traceback path to start node
+          //don't animate the end node
+          this.finalPath.push(currentNode);
+      }
+      currentNode = this.prevArray[currentNode[0]][currentNode[1]];
     }
+    await this.animateCells(this.finalPath,"yellow");
     this.visitedCellsToAnimate = []; //clear animation for the next run
+    this.finalPath = [];
     //will probably write a while loop: while current node != end node, traverse
     //to the node at the highest priority position at the end of the loop
     //mark the current node as visited, add unvisited neighbors to the queue, traverse to the
