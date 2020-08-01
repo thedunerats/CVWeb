@@ -1,7 +1,8 @@
 <button (click) = "resetBoard()">Reset Board</button>
 <button (click) = "getNeighbors(this.startNode)">Get Neighbors</button>
-<button (click) = "depthFirstSearch(this.startNode)">Pathfind!</button>
+<button (click) = "depthFirstSearch(this.startNode)">DFS</button>
 <button (click) = "breadthFirstSearch(this.startNode)">BFS</button>
+<button (click) = "dijkstrasAlgo(this.startNode)">Dijkstra</button>
 <table layout = "row" class = "d-flex container justify-content-center"> 
     <tbody class = "flex-sm-shrink-1">
         <tr *ngFor = "let r of visitedArray; let i = index" class = "flex-sm-shrink-1">
