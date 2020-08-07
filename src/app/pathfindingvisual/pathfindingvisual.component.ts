@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 
+
 @Component({
   selector: 'app-pathfindingvisual',
   templateUrl: './pathfindingvisual.component.html',
@@ -40,6 +41,10 @@ export class PathfindingvisualComponent implements OnInit {
   distanceArray: number[][] = [];
   distanceRow: number[] = [];
 
+  //testing Only
+  scoreArray: number[][] = [];
+  scoreRow: number[] = [];
+
   //special nodes (ordered pairs)
   startNode: number[] = []; 
   endNode: number[] = [];
@@ -64,6 +69,7 @@ export class PathfindingvisualComponent implements OnInit {
         this.colorRow.push("white");
         this.prevRow.push(null); //for parent traceback function
         this.distanceRow.push(Infinity);
+        this.scoreRow.push(Infinity); //testing
       }
       this.visitedArray.push(this.visitedRow); //pushes and clears entire grid row before next iteration
       this.visitedRow = [];
@@ -76,6 +82,9 @@ export class PathfindingvisualComponent implements OnInit {
 
       this.distanceArray.push(this.distanceRow); //pushes and clears distance row
       this.distanceRow = [];
+
+      this.scoreArray.push(this.distanceRow); //pushes and clears distance row
+      this.scoreRow = [];
     }
     console.log(this.visitedArray);
     console.log(this.colorArray);
@@ -153,6 +162,31 @@ export class PathfindingvisualComponent implements OnInit {
     this.setEndNode(12,36);
     this.visitedCellsToAnimate = [];
     this.finalPath = [];
+  }
+
+  //clear the path only, leave the walls, start and end nodes
+  clearPath(){
+    for (let i = 0; i < this.gridWidth; i++){
+      for(let j = 0; j < this.gridLength; j++){
+        if(this.colorArray[i][j] === "yellow" || this.colorArray[i][j] === "orange"){ //will need to update to include visited nodes
+          this.colorArray[i][j] = "white";
+        }
+        if(this.visitedArray[i][j] === true){
+          this.visitedArray[i][j] = false;
+        }
+
+        if(!this.prevArray[i][j] === null){
+          this.prevArray[i][j] = null;
+        }
+
+        if(this.distanceArray[i][j] !== Infinity){
+          this.distanceArray[i][j] = Infinity;
+        }
+      }
+    }
+
+    this.visitedCellsToAnimate = [];
+    this.finalPath = [];    
   }
 
   //will probably need an animation util that shades and delays.
@@ -323,6 +357,18 @@ export class PathfindingvisualComponent implements OnInit {
     //console.log(neighbors.length);
     //console.log(this.swapArrayValues(neighbors));
     return neighbors;
+  }
+
+  //calculate distance from current node to end node with this formula
+  //does not consider diagonals, not included here.
+  //may try that down the line if it's required in another project.
+  distanceRemainingHeuristic(nodeToCheck: number[]): number{
+    let remainingY: number;
+    let remainingX: number;
+    remainingY = Math.abs(this.endNode[0] - nodeToCheck[0]);
+    remainingX = Math.abs(this.endNode[1] - nodeToCheck[1]);
+
+    return remainingY + remainingX;
   }
 
   //pathfinding functions
@@ -516,6 +562,201 @@ export class PathfindingvisualComponent implements OnInit {
     }
     console.log("made it to the end!");
     currentNode = [highestPriorityTriple[0],highestPriorityTriple[1]];
+    console.log("current NOde:" + currentNode);
+    console.log(this.distanceArray);
+    priorityQueue = []; //clear the priority queue
+    //await this.animateCells(this.visitedCellsToAnimate,"orange"); 
+    console.log(this.visitedCellsToAnimate); //testing
+    console.log(this.prevArray);
+
+    await this.animateCells(this.visitedCellsToAnimate,"orange");
+    
+    while(!this.isStartNode(currentNode)){ //keep going until start is reached
+      if(!this.isEndNode(currentNode)){ //base case, do when end node is found
+        //traceback path to start node
+        //don't animate the end node
+        this.finalPath.push(currentNode);
+      }
+      currentNode = this.prevArray[currentNode[0]][currentNode[1]];
+    }
+    await this.animateCells(this.finalPath,"yellow");
+    this.visitedCellsToAnimate = []; //clear animation for the next run
+    this.finalPath = [];
+  }
+
+  async greedyBestFirstSearch(currentNode: number[]){
+    //needs a contingency in case it gets stuck (like in DFS)
+    //traverses to the most promising node determined by a heuristic
+    //combines DFS and Dijkstra's.
+    
+    //we are going to pull the most promising node from the priority queue each time.
+    //similar to what we did with Dijkstra's.
+    //I can probably still use the prev array to track the parent nodes and trace the path.
+    let priorityQueue: number[][] = [];
+    let highestPriorityTriple: number[] = [];
+    let orderedTripleToPush: number[] = [];
+    let nodeScore: number;
+    let tempIndex: number;
+    let duplicateFound: boolean = false;
+
+    //need to pop from path and continue to next iteration if it gets stuck?
+    priorityQueue.push([currentNode[0],currentNode[1],this.distanceRemainingHeuristic(currentNode)]); //key-value triple
+    while(!this.isEndNode([highestPriorityTriple[0],highestPriorityTriple[1]])){
+      //pull and remove the entry in the queue with the shortest distance from the start node (poll operation)
+      nodeScore = Infinity; //reset for new iteration of the loop
+      for(let i = 0; i < priorityQueue.length; i++){ //poll operation
+        if(priorityQueue[i][2] < nodeScore){ 
+          highestPriorityTriple = priorityQueue[i]; //grab most promising (shortest distance) node from the queue
+          nodeScore = priorityQueue[i][2]; //reset temp for next loop iteration
+          tempIndex = i; //grab index
+        }
+      }
+
+      priorityQueue.splice(tempIndex,1); //remove the polled entry from the queue
+      console.log(priorityQueue);
+      this.visitedArray[highestPriorityTriple[0]][highestPriorityTriple[1]] = true; //mark highest priority node as visited
+      if(!this.isStartNode([highestPriorityTriple[0],highestPriorityTriple[1]]) && !this.isEndNode([highestPriorityTriple[0],highestPriorityTriple[1]])){
+        this.visitedCellsToAnimate.push([highestPriorityTriple[0],highestPriorityTriple[1]]); //animate visited nodes
+      }
+      let neighbors = this.getNeighbors([highestPriorityTriple[0],highestPriorityTriple[1]]); //get all unvisited neighbors from highest priority node
+      //do similar to dijkstras, but score it differently
+      
+      for(let i = 0; i < neighbors.length; i++){ //iterate through unvisited neighbors
+        //calculate heuristic distances to end from each neighbor
+        //check for the entry in the priority queue
+        this.prevArray[neighbors[i][0]][neighbors[i][1]] = [highestPriorityTriple[0],highestPriorityTriple[1]]; //place parent node in all unvisited neighbors, may change later though
+        this.distanceArray[neighbors[i][0]][neighbors[i][1]] = this.distanceRemainingHeuristic(neighbors[i]); //calculate heuristic distance of neighbors
+        //visits the most promising (closest) node for each iteration of the loop
+        for(let j = 0; j < priorityQueue.length; j++){ // search priority queue for duplicates
+          if(priorityQueue[j][0] === neighbors[i][0] && priorityQueue[j][1] == neighbors[i][1]){ //if node is already in priority queue
+            duplicateFound = true;
+            break; //node found
+          } 
+        } //restart loop since a duplicate was found
+        if(duplicateFound){
+          duplicateFound = false;
+          continue;
+        }
+        //set ordered triple to push to the queue if not there already
+        orderedTripleToPush = [neighbors[i][0],neighbors[i][1], this.distanceArray[neighbors[i][0]][neighbors[i][1]]];
+        //make sure to push all unvisited neighbor triples into priority ueue
+        console.log("pushing:");//testing
+        console.log(orderedTripleToPush);
+        priorityQueue.push(orderedTripleToPush);
+        console.log("priority queue:"); //testing
+        console.log(priorityQueue);
+      
+      }
+    }
+    console.log("Made it to the end!");
+    currentNode = [highestPriorityTriple[0],highestPriorityTriple[1]];
+    console.log("current NOde:" + currentNode);
+    console.log(this.distanceArray);
+    priorityQueue = []; //clear the priority queue
+    //await this.animateCells(this.visitedCellsToAnimate,"orange"); 
+    console.log(this.visitedCellsToAnimate); //testing
+    console.log(this.prevArray);
+
+    await this.animateCells(this.visitedCellsToAnimate,"orange");
+    
+    while(!this.isStartNode(currentNode)){ //keep going until start is reached
+      if(!this.isEndNode(currentNode)){ //base case, do when end node is found
+        //traceback path to start node
+        //don't animate the end node
+        this.finalPath.push(currentNode);
+      }
+      currentNode = this.prevArray[currentNode[0]][currentNode[1]];
+    }
+    await this.animateCells(this.finalPath,"yellow");
+    this.visitedCellsToAnimate = []; //clear animation for the next run
+    this.finalPath = [];
+  }
+
+  async AStar(currentNode: number[]){
+    this.distanceArray[currentNode[0]][currentNode[1]] = 0; //distance from start node to start node
+    //initialize the priority queue
+    let priorityQueue: number[][] = [];
+    //we will add the key value pair by feeding 3 values every time; the first 2 are the coordinates
+    // and the last one is the distance. an ordered triple. perfect.
+    priorityQueue.push([currentNode[0],currentNode[1],this.distanceRemainingHeuristic(currentNode)]); //key-value triple
+    //the poll method retrieves and removes the highest priority element from the queue.
+    // in this case, the shortest distance, or the smallest value for the third digit of the triple.
+    //for AStar, we need to initialize the distance array values separate of the node score.
+    this.distanceArray[currentNode[0]][currentNode[1]] = 0;
+    console.log(priorityQueue);
+    let highestPriorityTriple: number[] = []; //ordered triple of node and distance from start
+    let orderedTripleToPush: number[] = []; //represents a triple that gets pushed into queue
+    let newDist: number; //temporarily computed new distance
+    let nodeScore: number = Infinity;
+    let tempIndex: number; //index to perform poll operation, ensures proper element leaves the queue
+    let duplicateFound: boolean = false;  //check for a duplicate helper boolean
+    while(!this.isEndNode([highestPriorityTriple[0],highestPriorityTriple[1]])){  //the end node
+    //while(priorityQueue.length > 0){
+      //pull and remove the entry in the queue with the shortest distance from the start node (poll operation)
+      nodeScore = Infinity; //reset for new iteration of the loop
+      for(let i = 0; i < priorityQueue.length; i++){ //poll operation
+        if(priorityQueue[i][2] < nodeScore){ 
+          highestPriorityTriple = priorityQueue[i]; //grab most promising (lowest scoring) node from the queue
+          nodeScore = priorityQueue[i][2]; //reset temp for next loop iteration
+          tempIndex = i; //grab index
+        }
+      }
+      console.log("current lowest score:" + nodeScore);
+      console.log("current triple: " + highestPriorityTriple); //testing
+      priorityQueue.splice(tempIndex,1); //remove the polled entry from the queue
+      console.log(priorityQueue);
+      this.visitedArray[highestPriorityTriple[0]][highestPriorityTriple[1]] = true; //mark highest priority node as visited
+      if(this.distanceArray[highestPriorityTriple[0]][highestPriorityTriple[1]] + this.distanceRemainingHeuristic([highestPriorityTriple[0],highestPriorityTriple[1]]) > highestPriorityTriple[2]){
+        continue; // lower score for node already found, restart the loop
+      }
+      //add to visited animation here? and reset current node? nah, do that at the end. 
+      //or....we can do it here. need to check for both start and end node though.
+      //FIXME: visited cells to animate contains a lot of duplicates
+      if(!this.isStartNode([highestPriorityTriple[0],highestPriorityTriple[1]]) && !this.isEndNode([highestPriorityTriple[0],highestPriorityTriple[1]])){
+        this.visitedCellsToAnimate.push([highestPriorityTriple[0],highestPriorityTriple[1]]);
+      }
+      
+      let neighbors = this.getNeighbors([highestPriorityTriple[0],highestPriorityTriple[1]]); //get all unvisited neighbors from highest priority node
+      newDist = this.distanceArray[highestPriorityTriple[0]][highestPriorityTriple[1]] + 1; //compute new distance for priority queue
+      for(let i = 0; i < neighbors.length; i++){ //iterate through unvisited neighbors
+        console.log("new distance:" + newDist); //testing
+        //check for the entry in the priority queue
+        this.prevArray[neighbors[i][0]][neighbors[i][1]] = [highestPriorityTriple[0],highestPriorityTriple[1]]; //testing, positioned here to eliminate duplicates
+        this.distanceArray[neighbors[i][0]][neighbors[i][1]] = newDist; //add distance traveled entry for neighbors in distance array
+        console.log(this.distanceArray[neighbors[i][0]][neighbors[i][1]]); //testing
+        //visits the most promising (closest) node for each iteration of the loop
+        for(let j = 0; j < priorityQueue.length; j++){ // search priority queue for duplicates
+          if(priorityQueue[j][0] === neighbors[i][0] && priorityQueue[j][1] == neighbors[i][1]){ //if node is already in priority queue
+            duplicateFound = true;
+            if(newDist + this.distanceRemainingHeuristic(neighbors[i]) < highestPriorityTriple[2]){ //decrease key if new score is smaller
+              priorityQueue[j][2] = newDist + this.distanceRemainingHeuristic(neighbors[i]);
+            }
+            break; //node found
+          } 
+        } //restart loop since a duplicate was found
+        if(duplicateFound){
+          duplicateFound = false;
+          continue;
+        }
+        console.log("estimated distance remaining for" + neighbors[i] + "=" + this.distanceRemainingHeuristic(neighbors[i]));
+        nodeScore = newDist + this.distanceRemainingHeuristic(neighbors[i]); //compute node score for all neighbors
+        this.scoreArray[neighbors[i][0]][neighbors[i][1]] = nodeScore; //testing
+        console.log("distance traveled:" + newDist)
+        console.log("node score:" + nodeScore);
+        //set ordered triple to push to the queue if not there already
+        orderedTripleToPush = [neighbors[i][0],neighbors[i][1],nodeScore];
+        //make sure to push all unvisited neighbor triples into priority ueue
+        console.log("pushing:");//testing
+        console.log(orderedTripleToPush);
+        priorityQueue.push(orderedTripleToPush);
+        console.log("priority queue:"); //testing
+        console.log(priorityQueue);
+      
+      }
+    }
+    console.log("made it to the end!");
+    currentNode = [highestPriorityTriple[0],highestPriorityTriple[1]];
+    console.log(this.scoreArray); //testing
     console.log("current NOde:" + currentNode);
     console.log(this.distanceArray);
     priorityQueue = []; //clear the priority queue
