@@ -61,6 +61,9 @@ export class PathfindingvisualComponent implements OnInit {
   //animated cell array
   visitedCellsToAnimate: number[][] = [];
 
+  //partition queue for maze division
+  partitionQueue: number[][] = [];
+
   //UTIL Functions
   fillArray(){ //call to reset the array back to normal
     for (let i = 0; i < this.gridWidth; i++){
@@ -305,6 +308,10 @@ export class PathfindingvisualComponent implements OnInit {
     }
   }
 
+  getRandomInt(min: number, max: number): number{
+    return Math.floor((Math.random() * (max - min)) + min);
+  }
+
   /*swapArrayValues(nodeSet: number[][]): number[][]{ //do this before putting into values to animate
   for(let n = 0; n < nodeSet.length; n++){
     var temp = nodeSet[n][0];
@@ -369,6 +376,168 @@ export class PathfindingvisualComponent implements OnInit {
     remainingX = Math.abs(this.endNode[1] - nodeToCheck[1]);
 
     return remainingY + remainingX;
+  }
+
+  //wall drawing functions
+  //FIXME: avOID START AND END noDES
+  async drawWalls(){
+    for(let i = 0; i < this.gridWidth; i++){
+      this.colorArray[i][0] = "#0B041C";
+      await this.sleep(3); //adds a little animation 
+      this.colorArray[i][this.gridLength-1] = "#0B041C";
+      await this.sleep(3);
+    }
+    for(let i = 0; i < this.gridLength; i++){
+      this.colorArray[0][i] = "#0B041C";
+      await this.sleep(3);
+      this.colorArray[this.gridWidth-1][i] = "#0B041C";
+      await this.sleep(3);
+    }
+  }
+
+  //recursive maze division
+  //will need to incorporate a bias later. get a default working first.
+  // need to think of this in terms of horizontal and vertical bounds. Might refactor it
+  // to make it easier to read. note: they will be lower bounds.
+  // then calculate the size of the partition.
+  // might need to define lower and upperbounds for the partitions in the function call.
+  async recursiveMazeDivision(lowerVerticalBound: number, upperVerticalBound: number, 
+    lowerHorizontalBound: number, upperHorizontalBound: number, wallsDrawn: boolean){
+    //do recursion? draw walls then insert the base case?
+    //only want to execute craw walls once.
+    //will use visited cells to animate to keep track of walls to draw.
+    let width = upperHorizontalBound - lowerHorizontalBound;
+    let height = upperVerticalBound - lowerVerticalBound;
+    let wallThreshold: number = width + height;  //wall placement
+    let twoHoles: boolean = false;
+    console.log("width:" + width);
+    console.log("height:" + height);
+    console.log("wallThreshold:" + wallThreshold);
+    if(!wallsDrawn) {
+      await this.drawWalls(); //pass in true every recursion. pass in false on the first iteration
+    }
+    //base case (no areas with width and height > 1)
+    //NOTE: it should be 1 but 1 would represent 2 squares. this is to ensure the math works properly. 
+    /*if(width === 0 || height === 0){ //end of function, 1 of 2 cases (and case as well)
+      console.log("Made it to the end!");
+      return;
+    } */
+    //draw a line (horizontal or vertical) at a random spot in the partition
+    // need wall placement, wall direction and one spot to construct a hole.
+    //decide on direction first. then on the placement.
+    let wallDirection = this.getRandomInt(0,wallThreshold);
+    console.log("wallDirection:"+ wallDirection);
+    if((wallDirection < width) || width <= 2){ //vertical. everything is good up to here. will probably change how this works to account for bias in a future iteration.
+      let wallPlacement = this.getRandomInt(lowerHorizontalBound + 1,upperHorizontalBound - 1); //random integer between bounds of the partition
+      let wallHole = this.getRandomInt(lowerVerticalBound,upperVerticalBound); //random hole in the wall of partition, also must not be directly next to another parallel wall
+      if(!this.isThisAWall([lowerVerticalBound - 1,wallPlacement]) || !this.isThisAWall([upperVerticalBound + 1,wallPlacement])){  //make sure wall doesn't block another opening
+        //wallPlacement = this.getRandomInt(lowerHorizontalBound + 1,upperHorizontalBound - 1); //reroll if it does
+        if(!this.isThisAWall([lowerVerticalBound - 1,wallPlacement])){
+          wallHole = lowerVerticalBound;
+        } else { 
+          wallHole = upperVerticalBound;
+        }
+      }
+      if(!this.isThisAWall([lowerVerticalBound - 1,wallPlacement]) && !this.isThisAWall([upperVerticalBound + 1,wallPlacement])){  //make sure wall doesn't block another opening
+        twoHoles = true; //check for holes on both sides, this is true case
+      }
+      if(twoHoles){ //leave the gaps open
+        for(let i = lowerVerticalBound + 1; i <= upperVerticalBound - 1; i++){ //for the vertical span of the partition
+          this.shade(i,wallPlacement,"#0B041C"); //draw the wall
+          await this.sleep(2);
+        }
+      } else { 
+        for(let i = lowerVerticalBound; i <= upperVerticalBound; i++){ //for the vertical span of the partition
+          if(i != wallHole){ //everything except the hole
+            this.shade(i,wallPlacement,"#0B041C"); //draw the wall
+            await this.sleep(2);
+          }
+        }
+      }
+      if(this.partitionQueue.length > 0){ //poll operation, remove entry at front of queue
+        this.partitionQueue.splice(0,1);
+      }
+      //add both smaller partitions to the partition queue for later
+      if((upperVerticalBound - lowerVerticalBound > 1) && (wallPlacement - 1) - lowerHorizontalBound > 1 && (width * height > 8 )){ //left partition
+        this.partitionQueue.push([lowerVerticalBound,upperVerticalBound,lowerHorizontalBound,wallPlacement-1]);
+      }
+      if((upperVerticalBound - lowerVerticalBound > 1) && upperHorizontalBound - (wallPlacement + 1) > 1 && (width * height > 8 )){ //right partition
+        this.partitionQueue.push([lowerVerticalBound,upperVerticalBound,wallPlacement + 1,upperHorizontalBound]);
+      }
+      //call function on one of the newly created partitions, the one at the front of the queue though
+      console.log(this.partitionQueue);
+      if(this.partitionQueue.length === 0){ //end of function, 1 of 2 cases (and case as well)
+        console.log("Made it to the end!");
+        return;
+      } 
+
+      await this.recursiveMazeDivision(this.partitionQueue[0][0],this.partitionQueue[0][1],
+        this.partitionQueue[0][2],this.partitionQueue[0][3],true);
+      /*await this.recursiveMazeDivision(lowerVerticalBound,upperVerticalBound, //lower partition
+        lowerHorizontalBound, wallPlacement - 1, true);
+      await this.recursiveMazeDivision(lowerVerticalBound,upperVerticalBound, //upper partition
+        wallPlacement + 1, upperHorizontalBound, true);*/
+    } else { //horizontal
+      let wallPlacement = this.getRandomInt(lowerVerticalBound + 1,upperVerticalBound - 1); //random integer between bounds of the partition
+      let wallHole = this.getRandomInt(lowerHorizontalBound,upperHorizontalBound); //random hole in the wall of partition
+      if(!this.isThisAWall([wallPlacement,lowerHorizontalBound - 1]) || !this.isThisAWall([wallPlacement,upperHorizontalBound + 1])){  //make sure wall doesn't block another opening
+        //wallPlacement = this.getRandomInt(lowerHorizontalBound + 1,upperHorizontalBound - 1); //reroll if it does
+        if(!this.isThisAWall([wallPlacement,lowerHorizontalBound - 1])){ //if a hole is found, unblock the end where it exists (each partition and only have 1 hole at a time)
+          wallHole = lowerHorizontalBound;
+        } else{
+          wallHole = upperHorizontalBound;
+        }
+      }
+      if(!this.isThisAWall([wallPlacement,lowerHorizontalBound - 1]) && !this.isThisAWall([wallPlacement,upperHorizontalBound + 1])){  //make sure wall doesn't block another opening
+        twoHoles = true; //check for 2 holes
+      }
+      if(twoHoles){ //leave the gaps open
+        for(let i = lowerHorizontalBound + 1; i <= upperHorizontalBound - 1; i++){ //for the vertical span of the partition
+          this.shade(wallPlacement,i,"#0B041C"); //draw the wall
+          await this.sleep(2);
+        }
+      } else { 
+      for(let i = lowerHorizontalBound; i <= upperHorizontalBound; i++){ //for the vertical span of the partition
+        if(i != wallHole){ //everything except the hole
+          this.shade(wallPlacement,i,"#0B041C"); //draw the wall
+          await this.sleep(2);
+          }
+        }
+      }
+      //add both of the smaller sections to the partition to the queue and call the function on the first one
+      //remove the current entry from the partition queue
+      //we may need to add the first section to the partition queue in the beginning though. Needs some thought.
+      if(this.partitionQueue.length > 0){ //poll operation, remove entry at front of queue
+        this.partitionQueue.splice(0,1);
+      }
+      //add both smaller partitions to the partition queue for later
+      if((upperHorizontalBound - lowerHorizontalBound > 1) && (wallPlacement - 1) - lowerVerticalBound > 1 && (width * height > 8 )){ //lower partition
+        this.partitionQueue.push([lowerVerticalBound,wallPlacement - 1,lowerHorizontalBound,upperHorizontalBound]);
+      }
+      if((upperHorizontalBound - lowerHorizontalBound > 1) && upperVerticalBound - (wallPlacement + 1) > 1 && (width * height > 8 )){ //upper partition
+        this.partitionQueue.push([wallPlacement + 1,upperVerticalBound,lowerHorizontalBound,upperHorizontalBound]);
+      }
+      //call function on one of the newly created partitions, the one at the front of the queue though
+      console.log(this.partitionQueue);
+      if(this.partitionQueue.length === 0){ //end of function, 1 of 2 cases (and case as well)
+        console.log("Made it to the end!");
+        return;
+      } 
+
+      await this.recursiveMazeDivision(this.partitionQueue[0][0],this.partitionQueue[0][1],
+        this.partitionQueue[0][2],this.partitionQueue[0][3],true);
+      /*await this.recursiveMazeDivision(lowerVerticalBound,wallPlacement - 1, //lower partition
+        lowerHorizontalBound, upperHorizontalBound, true);
+      await this.recursiveMazeDivision(wallPlacement + 1,upperVerticalBound, //upper partition
+        lowerHorizontalBound, upperHorizontalBound, true); */
+    }
+
+    
+    //need to pass variable areas into the function? I'll think about that.
+    //maybe we can pass in the coordinates detailing the edges of each partition
+    //and keep going until the parameters reach a certain size?
+    //do a double recursion: one with each of the 2 partitions (like in quicksort)
+
   }
 
   //pathfinding functions
