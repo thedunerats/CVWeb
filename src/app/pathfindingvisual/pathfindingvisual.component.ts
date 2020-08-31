@@ -416,12 +416,7 @@ export class PathfindingvisualComponent implements OnInit {
     if(!wallsDrawn) {
       await this.drawWalls(); //pass in true every recursion. pass in false on the first iteration
     }
-    //base case (no areas with width and height > 1)
-    //NOTE: it should be 1 but 1 would represent 2 squares. this is to ensure the math works properly. 
-    /*if(width === 0 || height === 0){ //end of function, 1 of 2 cases (and case as well)
-      console.log("Made it to the end!");
-      return;
-    } */
+ 
     //draw a line (horizontal or vertical) at a random spot in the partition
     // need wall placement, wall direction and one spot to construct a hole.
     //decide on direction first. then on the placement.
@@ -443,14 +438,18 @@ export class PathfindingvisualComponent implements OnInit {
       }
       if(twoHoles){ //leave the gaps open
         for(let i = lowerVerticalBound + 1; i <= upperVerticalBound - 1; i++){ //for the vertical span of the partition
-          this.shade(i,wallPlacement,"#0B041C"); //draw the wall
-          await this.sleep(2);
+          if(!this.isStartNode([i,wallPlacement]) && !this.isEndNode([i,wallPlacement])){
+            this.shade(i,wallPlacement,"#0B041C"); //draw the wall
+            await this.sleep(2);
+          }
         }
       } else { 
         for(let i = lowerVerticalBound; i <= upperVerticalBound; i++){ //for the vertical span of the partition
           if(i != wallHole){ //everything except the hole
-            this.shade(i,wallPlacement,"#0B041C"); //draw the wall
-            await this.sleep(2);
+            if(!this.isStartNode([i,wallPlacement]) && !this.isEndNode([i,wallPlacement])){
+              this.shade(i,wallPlacement,"#0B041C"); //draw the wall
+              await this.sleep(2);
+            }
           }
         }
       }
@@ -473,10 +472,7 @@ export class PathfindingvisualComponent implements OnInit {
 
       await this.recursiveMazeDivision(this.partitionQueue[0][0],this.partitionQueue[0][1],
         this.partitionQueue[0][2],this.partitionQueue[0][3],true);
-      /*await this.recursiveMazeDivision(lowerVerticalBound,upperVerticalBound, //lower partition
-        lowerHorizontalBound, wallPlacement - 1, true);
-      await this.recursiveMazeDivision(lowerVerticalBound,upperVerticalBound, //upper partition
-        wallPlacement + 1, upperHorizontalBound, true);*/
+
     } else { //horizontal
       let wallPlacement = this.getRandomInt(lowerVerticalBound + 1,upperVerticalBound - 1); //random integer between bounds of the partition
       let wallHole = this.getRandomInt(lowerHorizontalBound,upperHorizontalBound); //random hole in the wall of partition
@@ -493,14 +489,18 @@ export class PathfindingvisualComponent implements OnInit {
       }
       if(twoHoles){ //leave the gaps open
         for(let i = lowerHorizontalBound + 1; i <= upperHorizontalBound - 1; i++){ //for the vertical span of the partition
-          this.shade(wallPlacement,i,"#0B041C"); //draw the wall
-          await this.sleep(2);
+          if(!this.isStartNode([wallPlacement,i]) && !this.isEndNode([wallPlacement,i])){
+            this.shade(wallPlacement,i,"#0B041C"); //draw the wall
+            await this.sleep(2);
+          }
         }
       } else { 
       for(let i = lowerHorizontalBound; i <= upperHorizontalBound; i++){ //for the vertical span of the partition
         if(i != wallHole){ //everything except the hole
-          this.shade(wallPlacement,i,"#0B041C"); //draw the wall
-          await this.sleep(2);
+          if(!this.isStartNode([wallPlacement,i]) && !this.isEndNode([wallPlacement,i])){
+            this.shade(wallPlacement,i,"#0B041C"); //draw the wall
+            await this.sleep(2);
+            }
           }
         }
       }
@@ -526,10 +526,7 @@ export class PathfindingvisualComponent implements OnInit {
 
       await this.recursiveMazeDivision(this.partitionQueue[0][0],this.partitionQueue[0][1],
         this.partitionQueue[0][2],this.partitionQueue[0][3],true);
-      /*await this.recursiveMazeDivision(lowerVerticalBound,wallPlacement - 1, //lower partition
-        lowerHorizontalBound, upperHorizontalBound, true);
-      await this.recursiveMazeDivision(wallPlacement + 1,upperVerticalBound, //upper partition
-        lowerHorizontalBound, upperHorizontalBound, true); */
+
     }
 
     
