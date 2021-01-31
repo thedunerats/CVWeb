@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 
 
 
@@ -19,6 +20,7 @@ export class PathfindingvisualComponent implements OnInit {
     this.setEndNode(12,36); //the mouseenter and shade functions have
     //the coordinate system backwards and were converted into a cartesian system.
     //I have come to regret this move. NEVER DO THIS! VERY BAD!
+    console.log(this.wallBias);
   }
 
   //initialize variables
@@ -63,6 +65,9 @@ export class PathfindingvisualComponent implements OnInit {
 
   //partition queue for maze division
   partitionQueue: number[][] = [];
+
+  //wall bias
+  wallBias: string = "NONE";
 
   //UTIL Functions
   fillArray(){ //call to reset the array back to normal
@@ -395,6 +400,73 @@ export class PathfindingvisualComponent implements OnInit {
     }
   }
 
+  
+  chooseBias(event: any){
+    switch(event.target.value){
+      case "VERTICAL":
+        this.wallBias = "VERTICAL";
+        break;
+      case "HORIZONTAL":
+        this.wallBias = "HORIZONTAL";
+        break;
+      case "AESTHETIC":
+        this.wallBias = "AESTHETIC";
+        break;
+      case "NONE":
+        this.wallBias = "NONE";
+        break;
+    }
+    console.log(this.wallBias);
+  }
+
+
+  //wallDirectionCalculator
+  //NOTE: your random int generator always rounds down. You might want to consider compensating
+  //for that in the rest of the codebase or the placement of the generator itself.
+  // Either way, I think you have all the random generation calculations you need to make.
+  // That is, unless you want to change how the get neighbors function prioritizes
+  // its result sets. (i.e. randomize the order versus same nodes in the same order by direction)
+  wallDirectionCalculator(width: number, height: number, bias: string): string{
+    let wallThreshold = width + height;
+    let output: string;
+    let calculatedNumber: number;
+    switch(bias){
+      case "VERTICAL":
+        calculatedNumber = this.getRandomInt(0,10);
+        if(calculatedNumber < 9){
+          output = "VERTICAL";
+        } else {
+          output = "HORIZONTAL";
+        }
+        break;
+      case "HORIZONTAL":
+        calculatedNumber = this.getRandomInt(0,10);
+        if(calculatedNumber < 9){
+          output = "HORIZONTAL";
+        } else {
+          output = "VERTICAL";
+        }
+        break;
+      case "AESTHETIC":
+        calculatedNumber = this.getRandomInt(0,wallThreshold);
+        if((calculatedNumber < width) || width <= 2){
+          output = "VERTICAL";
+        } else {
+          output = "HORIZONTAL";
+        }
+        break;
+      case "NONE":
+        calculatedNumber = this.getRandomInt(0,2);
+        if(calculatedNumber === 0){
+          output = "VERTICAL";
+        } else {
+          output = "HORIZONTAL";
+        }
+        break;
+    }
+    return output;
+  }
+
   //recursive maze division
   //will need to incorporate a bias later. get a default working first.
   // need to think of this in terms of horizontal and vertical bounds. Might refactor it
@@ -420,9 +492,9 @@ export class PathfindingvisualComponent implements OnInit {
     //draw a line (horizontal or vertical) at a random spot in the partition
     // need wall placement, wall direction and one spot to construct a hole.
     //decide on direction first. then on the placement.
-    let wallDirection = this.getRandomInt(0,wallThreshold);
+    let wallDirection = this.wallDirectionCalculator(width,height,this.wallBias);
     console.log("wallDirection:"+ wallDirection);
-    if((wallDirection < width) || width <= 2){ //vertical. everything is good up to here. will probably change how this works to account for bias in a future iteration.
+    if(wallDirection === "VERTICAL"){ //vertical. everything is good up to here. will probably change how this works to account for bias in a future iteration.
       let wallPlacement = this.getRandomInt(lowerHorizontalBound + 1,upperHorizontalBound - 1); //random integer between bounds of the partition
       let wallHole = this.getRandomInt(lowerVerticalBound,upperVerticalBound); //random hole in the wall of partition, also must not be directly next to another parallel wall
       if(!this.isThisAWall([lowerVerticalBound - 1,wallPlacement]) || !this.isThisAWall([upperVerticalBound + 1,wallPlacement])){  //make sure wall doesn't block another opening

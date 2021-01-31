@@ -8,6 +8,15 @@
 <button (click) = "dijkstrasAlgo(this.startNode)">Dijkstra</button>
 <button (click) = "greedyBestFirstSearch(this.startNode)">Greedy Best First Search</button>
 <button (click) = "AStar(this.startNode)">A* Search</button>
+<br>
+<!--bias dropdown-->
+<select name = "wallBias" (change) = "chooseBias($event)" ngModel>
+    <option value = "VERTICAL">Recursive Division (Vertical Bias)</option>
+    <option value = "HORIZONTAL">Recursive Division (Horizontal Bias)</option>
+    <option value = "AESTHETIC">Recursive Division (Aesthetic Bias)</option>
+    <option value = "NONE">Recursive Division (No Bias)</option>
+</select> 
+<br>
 <table layout = "row" class = "d-flex container justify-content-center"> 
     <tbody class = "flex-sm-shrink-1">
         <tr *ngFor = "let r of visitedArray; let i = index" class = "flex-sm-shrink-1">
