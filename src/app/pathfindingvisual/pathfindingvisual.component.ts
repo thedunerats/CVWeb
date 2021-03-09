@@ -314,7 +314,7 @@ export class PathfindingvisualComponent implements OnInit {
   }
 
   getRandomInt(min: number, max: number): number{
-    return Math.floor((Math.random() * (max - min)) + min);
+    return Math.floor((Math.random() * (max - min + 1)) + min);
   }
 
   /*swapArrayValues(nodeSet: number[][]): number[][]{ //do this before putting into values to animate
@@ -421,18 +421,13 @@ export class PathfindingvisualComponent implements OnInit {
 
 
   //wallDirectionCalculator
-  //NOTE: your random int generator always rounds down. You might want to consider compensating
-  //for that in the rest of the codebase or the placement of the generator itself.
-  // Either way, I think you have all the random generation calculations you need to make.
-  // That is, unless you want to change how the get neighbors function prioritizes
-  // its result sets. (i.e. randomize the order versus same nodes in the same order by direction)
   wallDirectionCalculator(width: number, height: number, bias: string): string{
     let wallThreshold = width + height;
     let output: string;
     let calculatedNumber: number;
     switch(bias){
       case "VERTICAL":
-        calculatedNumber = this.getRandomInt(0,10);
+        calculatedNumber = this.getRandomInt(0,9);
         if(calculatedNumber < 9){
           output = "VERTICAL";
         } else {
@@ -440,7 +435,7 @@ export class PathfindingvisualComponent implements OnInit {
         }
         break;
       case "HORIZONTAL":
-        calculatedNumber = this.getRandomInt(0,10);
+        calculatedNumber = this.getRandomInt(0,9);
         if(calculatedNumber < 9){
           output = "HORIZONTAL";
         } else {
@@ -456,7 +451,7 @@ export class PathfindingvisualComponent implements OnInit {
         }
         break;
       case "NONE":
-        calculatedNumber = this.getRandomInt(0,2);
+        calculatedNumber = this.getRandomInt(0,1);
         if(calculatedNumber === 0){
           output = "VERTICAL";
         } else {
@@ -1015,5 +1010,205 @@ export class PathfindingvisualComponent implements OnInit {
     await this.animateCells(this.finalPath,"yellow");
     this.visitedCellsToAnimate = []; //clear animation for the next run
     this.finalPath = [];
+  }
+
+  // creating a min heap class won't work for this.
+  // we need to index ordered triples.
+  // we need to write custom functions to handle all the events.
+  // neighbor pruning needs a direction. it will take a direction as an input.
+  // we need a function to determine which direction to travel from the current node.
+  // we need to determine the circumstances in which we find a jump point.
+  // we need a special heapify function for this.
+  // as soon as we hit a jump point, we need to move on to the forced neighbors?
+  // and add them to the heap?
+  // if we run into a dead end, we stop the recursion and mark a jump point at the current node.
+  // we change directions from there.
+  // check for dead ends before checking for forced neighbors?
+  // if prune neighbors is recursive, then we need a base case for it.
+  // we could use the traditional get neighbors function to navigate to the forced neighbor from
+  // the current node. We need to mark the parent nodes during the traversal, so we need to make
+  // use of the prev array to accomplish this.
+  // we will score every node during the neighbor pruning and traversal.
+  // if a visited node has a lower score on a revisit, we will reassign it.
+  // might need to have an extra condition of marking nodes that share a coordinate 
+  // with the end node as jump points. That way, we don't get stuck on a grid that has no walls.
+  // however, we don't stop until we find a forced neighbor. we will add that node to the heap though.
+  // we will score every node we encounter, including the pruned neighbors. we might also need
+  // to mark the parents of all those nods as well in order to properly execute the heuristic calculation.
+  // need a function to check if the current node is a dead end. (direction as an input)
+
+  //prune neighbors: has 2 possible exit conditions.
+  //either a dead end or a forced  neighbor.
+  // it's recursive. will need a direction as an input and a switch-case for it.
+  // we need to scan for the end node during neighbor pruning. 
+  // we need to set the distance array during neighbor pruning. It will come in handy later.
+
+  //finding a forced neighbor: only 1 of the 2 nodes diagonally in front of it is an obstacle.
+  // if a forced neighbor is the end node, we will mark the node as a jump point.
+  // prune neighbors needs a directional input.
+  // if we find a forced neighbor: we need to mark the node in between the forced neighbor
+  // and the current node as a parent and the current node as the parent of the one in between.
+  // 
+
+  // should we mark any nodes still in the heap in the end as vistited? maybe. No, we will not.
+
+  // during the direction check, we need to know the parent node of the neighbor in question.
+  // the relation of the parent node to the neighbor will give us that direction.
+  // remember: you need to input a direction into prune neighbors as well as a current node.
+  // need to assign distance array element before changing directions.
+  // need to assign everything before changing directions.
+
+  // if we're using a min heap, we may need a function to establish the relation between
+  // the node itself and the direction we should travel.
+  // a get parent function might be a good idea here. It would make everything a lot less messy.
+  // Holy crap, this functional programming paradigm really encourages you to clean everything 
+  // up.
+
+  // if we encounter a node twice and recalculate it with a lower score the second time,
+  // we will re-assign its parent and its score in the score array.
+  // we will only score neighbor nodes of jump points.
+  // we will only mark the parents of jump points.
+  // we will need a traceback function for connecting the dots.
+  // might need to write a helper function to check for a dead end.
+
+  // we should probably determine the direction after we pull the new node from 
+  // the min heap. use the parent node to figure it out.
+  // then start pruning neighbors.
+  // we will start each cycle by figuring out the direction. we will
+  // end the loop when a jump point gets reached.
+
+  // prune neighbors: reassign score and parent node at jump points if new score is lower.
+  //this.prevArray[neighbors[i][0]][neighbors[i][1]] = currentNode; //assign parent node of available neighbors
+  // ^ we will mark the parents of nodes during neighbor pruning. Might get weird with forced neighbors though.
+  // no need to do this in the middle of the grid.
+  // mark nodes as visited during prune neighbors? I think so.
+  // might need to make an exception for a matching coordinate jump point.
+
+  // we will determine which direction we go next by using a min heap.
+  // we will use the same heuristic as we did in A*?
+  // need to input the heap into the direction finder.
+  // we will assign the distance during prune neighbors. changing direction will do only that.
+
+  // I don't think I'm going to omit duplicates from this search. It doesn't make a lot of sense.
+  async jumpPointSearch(currentNode: number[]){
+    this.distanceArray[currentNode[0]][currentNode[1]] = 0; //distance from start node to start node
+    let highestPriorityTriple: number[] = []; //ordered triple of node and distance from start, serves as a priority queue
+    let priorityHeap: number[][] = [];
+    //priorityHeap.push([currentNode[0],currentNode[1],this.distanceRemainingHeuristic(currentNode)]); //key-value triple
+    // ^ not sure I'm going to use this.
+    let orderedTripleToPush: number[] = []; //represents a triple that gets pushed into heap
+    let newDist: number; //temporarily computed new distance
+    let nodeScore: number = Infinity;
+    let duplicateFound: boolean = false;  //check for a duplicate helper boolean
+    // first, determine the direction to travel.
+
+    console.log(this.determineJPDirection(currentNode,0,priorityHeap));
+    /* FIXME: get this working without the neighbor pruning first. then we will
+    add it in once we can successfully determine the direction every time from the beginning.
+    while(!this.isEndNode([highestPriorityTriple[0],highestPriorityTriple[1]])){
+      nodeScore = Infinity; //reset node score every iteration
+      // determine direction to travel
+      //recursively prune neighbors
+    }
+    */
+  }
+
+  determineJPDirection(currentNode: number[], currentDistanceTraveled: number, minHeap: number[][]): string { 
+    let neighbors = this.getNeighbors(currentNode);
+    console.log(neighbors); //testing
+    let output: number[] = [];
+    let xDistance: number;
+    let yDistance: number;
+    for(let i = 0; i < neighbors.length; i++){
+      if(currentDistanceTraveled + 1 < this.distanceArray[neighbors[i][0]][neighbors[i][1]]){
+        this.prevArray[neighbors[i][0]][neighbors[i][1]] = currentNode; // replace prev and distance array if new best is found
+        this.distanceArray[neighbors[i][0]][neighbors[i][1]] = currentDistanceTraveled + 1; // incorrect
+      }
+      // if new score of neighbors is lower than currently established, replace it
+      if((this.distanceArray[neighbors[i][0]][neighbors[i][1]] + this.distanceRemainingHeuristic(neighbors[i])) < this.scoreArray[neighbors[i][0]][neighbors[i][1]]){
+        this.scoreArray[neighbors[i][0]][neighbors[i][1]] = (this.distanceArray[neighbors[i][0]][neighbors[i][1]] + this.distanceRemainingHeuristic(neighbors[i]));
+      }
+      minHeap.push([neighbors[i][0],neighbors[i][1],this.scoreArray[neighbors[i][0]][neighbors[i][1]]]);
+      console.log([neighbors[i][0],neighbors[i][1],this.scoreArray[neighbors[i][0]][neighbors[i][1]]]);
+    } //FIXME: node score of last node is coming out as zero? ^ yep, it is.
+    console.log(minHeap); // testing
+    this.JPSHeapify(minHeap); // heapify after all additions
+    output = this.removeRootNodeJPSMinHeap(minHeap);
+    console.log("OUTPUT DIRECTION NODE: " + output); //testing for proper polling
+    console.log(this.distanceArray); // this and below statement for testing ()
+    console.log(this.scoreArray);
+    console.log(this.prevArray); //also testing
+    // check lowest score node for relation to parent, then return a direction
+    // the entry in the prev array is an array itself.
+    xDistance = output[1] - this.prevArray[output[0]][output[1]][1];
+    yDistance - output[0] - this.prevArray[output[0]][output[1]][0];
+
+    if(xDistance === 1 && yDistance === 0){
+      return "RIGHT";
+    } else if (xDistance === -1 && yDistance === 0) {
+      return "LEFT";
+    } else if (xDistance === 0 && yDistance === 1) {
+      return "UP";
+    } else if (xDistance === 0 && yDistance === -1) {
+      return "DOWN";
+    } else {
+      return "BROKEN";
+    }
+  }
+
+  // add node and re-heapify the data structure (remember: these are triples, not nodes alone.)
+  addnodeJPSMinHeap(triple: number[], array: number[][]){
+    array.push(triple);
+    this.JPSHeapify(array);
+  }
+
+  // remove root node and re-heapify the array (poll operation)
+  removeRootNodeJPSMinHeap(array:number[][]): number[]{
+    let output = array[0];
+    array.splice(0,1);
+    this.JPSHeapify(array);
+    return output;
+  }
+
+  //heapify: reset the entire data structure into a heap.
+  JPSHeapify(array:number[][]) {
+    let size = array.length;
+    // build heap (rearrange array)
+    for (let i = Math.floor(size / 2 - 1); i >= 0; i--){
+      this.heapify(array, size, i);
+    }
+  }
+
+  // heapify function
+  // to heapify a subtree rooted with node i which is an index in array[]
+  heapify(array: number[][], size, i) {
+    let min = i; // initialize min as root
+    let left = (2 * i) + 1; // left child of parent node
+    let right = (2 * i) + 2; // right child of parent node
+
+    // if left child is smaller than root
+    if (left < size && array[left][2] < array[min][2]){
+      min = left;
+    }  
+    // if right child is smaller than min
+    if (right < size && array[right][2] < array[min][2]){
+      min = right;
+    }
+    // if min is not root
+    if (min != i) {
+      // swap i and min
+      this.swap(array,i,min);
+
+      // recursively heapify the affected sub-tree
+      this.heapify(array, size, min)
+    }
+  } 
+
+  //swap for heapify
+  //swaps ordered triples in the min heap
+  swap(items: number[][], leftIndex: number, rightIndex: number){
+    let temp = items[leftIndex]; //perform the actual swap
+    items[leftIndex] = items[rightIndex];
+    items[rightIndex] = temp;
   }
 }
